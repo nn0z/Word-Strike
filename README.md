@@ -2,7 +2,7 @@
 
 **Word Strike** is a browser-based word guessing game set in a cosmic theme. Guess hidden words letter by letter, earn points, unlock badges, climb the leaderboard, and challenge yourself in Time Attack mode.
 
-Built entirely with **vanilla HTML, CSS, and JavaScript** — no frameworks, no libraries, no dependencies. Just open the file and play.
+Built entirely with **vanilla HTML, CSS, and JavaScript** — no frameworks, no libraries, no dependencies. Just open and play.
 
 ---
 
