@@ -118,8 +118,8 @@
   .coin-chip .coin-icon{font-size:16px}
   .coin-chip.bump{animation:coinBump .5s ease}
   @keyframes coinBump{0%,100%{transform:scale(1)}50%{transform:scale(1.15);box-shadow:0 0 25px rgba(251,191,36,.6)}}
-  .shop-btn{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,rgba(251,191,36,.25),rgba(245,158,11,.15));border:1px solid rgba(251,191,36,.5);color:var(--coin);font-size:20px;cursor:pointer;display:grid;place-items:center;padding:0;transition:.25s}
-  .shop-btn:hover{transform:scale(1.1) rotate(-8deg);box-shadow:0 0 20px rgba(251,191,36,.5)}
+  .shop-btn{width:42px;height:42px;border-radius:50%;background:var(--card-bg);border:1px solid var(--line);color:var(--txt);font-size:20px;cursor:pointer;display:grid;place-items:center;padding:0;transition:.25s}
+  .shop-btn:hover{transform:scale(1.08);border-color:var(--accent)}
   .theme-btn{width:42px;height:42px;border-radius:50%;background:var(--card-bg);border:1px solid var(--line);color:var(--txt);font-size:20px;cursor:pointer;display:grid;place-items:center;padding:0;transition:.25s}
   .theme-btn:hover{transform:rotate(20deg) scale(1.08);border-color:var(--accent)}
   html.day .theme-btn:hover{transform:rotate(-20deg) scale(1.08)}
@@ -167,11 +167,15 @@
   .timer-progress{height:6px;border-radius:100px;overflow:hidden;background:rgba(0,0,0,.2);transition:background .4s ease}
   html.day .timer-progress{background:rgba(0,0,0,.08)}
   .timer-progress-fill{height:100%;width:100%;background:linear-gradient(90deg,var(--green),var(--yellow),var(--red));transition:width 1s linear;border-radius:100px}
-  .attempts-wrap{position:relative;height:340px;margin-bottom:20px;overflow:hidden;border-radius:14px;mask-image:linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);-webkit-mask-image:linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%)}
-  .attempts{display:flex;flex-direction:column;gap:10px;position:absolute;left:0;right:0;bottom:0;transition:transform .35s cubic-bezier(.4,1.2,.5,1);padding-right:6px}
+  .attempts-wrap{position:relative;height:340px;margin-bottom:20px;overflow-y:auto;overflow-x:hidden;border-radius:14px;scroll-behavior:smooth}
+  .attempts-wrap::-webkit-scrollbar{width:8px}
+  .attempts-wrap::-webkit-scrollbar-track{background:rgba(0,0,0,.1);border-radius:10px}
+  .attempts-wrap::-webkit-scrollbar-thumb{background:var(--line);border-radius:10px}
+  .attempts-wrap::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+  .attempts{display:flex;flex-direction:column;gap:10px;padding:20px 6px 20px 0}
   .attempt{display:flex;gap:8px;justify-content:center;animation:pop .35s ease;flex-shrink:0}
   @keyframes pop{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
-  .attempt.old{opacity:.35;transform:scale(.92)}
+  .attempt.old{opacity:.65}
   .attempt.newest{animation:pop .4s ease, glowPulse .8s ease}
   @keyframes glowPulse{0%{filter:brightness(1)}50%{filter:brightness(1.35)}100%{filter:brightness(1)}}
   .tile{width:56px;height:56px;border-radius:12px;display:grid;place-items:center;font-size:26px;font-weight:800;text-transform:uppercase;background:var(--tile-bg);border:2px solid var(--line);transition:background .3s ease, border-color .3s ease, color .3s ease;color:var(--txt)}
@@ -233,7 +237,7 @@
   html.day .modal{background:rgba(15,23,42,.55)}
   @keyframes fade{from{opacity:0}to{opacity:1}}
   .modal.hidden{display:none}
-  #profileModal{z-index:100}
+  #profileModal{z-index:400}
   #avatarModal{z-index:300}
   #nameModal{z-index:200}
   #friendModal{z-index:250}
@@ -241,6 +245,8 @@
   #waitingModal{z-index:270}
   #shopModal{z-index:280}
   #friendsModal{z-index:290}
+  #inviteFriendModal{z-index:310}
+  #incomingInviteModal{z-index:320}
   .modal-box{background:linear-gradient(180deg,var(--card-bg),var(--bg2));border:1px solid var(--line);border-radius:24px;padding:32px;max-width:520px;width:100%;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:up .4s cubic-bezier(.4,1.4,.6,1);max-height:90vh;overflow-y:auto;scrollbar-width:none;margin:auto;transition:background .4s ease, border-color .4s ease}
   .modal-box::-webkit-scrollbar{display:none}
   @keyframes up{from{transform:translateY(30px) scale(.95);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
@@ -482,14 +488,16 @@
   }
   .online-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;margin-right:4px;box-shadow:0 0 6px var(--green)}
   .online-dot.offline{background:var(--muted);box-shadow:none}
-  .friend-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:var(--tile-bg);border:1px solid var(--line);cursor:pointer;transition:.2s;margin-bottom:6px}
+  .friend-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:var(--tile-bg);border:1px solid var(--line);transition:.2s;margin-bottom:6px}
   .friend-item:hover{border-color:var(--accent);transform:translateX(3px)}
   .friend-item.online{border-color:rgba(34,197,94,.4)}
+  .friend-item.clickable{cursor:pointer}
   .friend-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-size:18px;flex-shrink:0}
   .friend-info{flex:1;min-width:0}
   .friend-name{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .friend-status{font-size:11px;color:var(--muted)}
-  .friend-action{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:white;cursor:pointer}
+  .friend-action{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:white;cursor:pointer;flex-shrink:0}
+  .friend-action.reject{background:linear-gradient(135deg,#ef4444,#dc2626)}
   .add-friend-row{display:flex;gap:8px;margin-bottom:14px}
   .add-friend-row input{flex:1;padding:10px 14px;font-size:14px;letter-spacing:1px;margin:0}
   .add-friend-row button{padding:10px 16px;font-size:13px;white-space:nowrap}
@@ -500,9 +508,31 @@
   .friends-tab{flex:1;padding:8px;border-radius:8px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-weight:700;font-size:12px;transition:.2s}
   .friends-tab.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white}
   .notif-badge{position:absolute;top:-4px;right:-4px;background:var(--red);color:white;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:100px;display:grid;place-items:center;padding:0 4px;box-shadow:0 0 8px rgba(239,68,68,.6)}
+  .notif-badge.hidden{display:none}
   .friends-btn{width:42px;height:42px;border-radius:50%;background:var(--card-bg);border:1px solid var(--line);color:var(--txt);font-size:18px;cursor:pointer;display:grid;place-items:center;padding:0;transition:.25s;position:relative}
   .friends-btn:hover{transform:scale(1.08);border-color:var(--accent)}
-  #bootLoader{position:fixed;inset:0;z-index:500;background:var(--bg-solid);display:grid;place-items:center;transition:opacity .4s}
+  #bootLoader{position:fixed;inset:0;z-index:500;background:radial-gradient(circle at 20% 0%, #1a2340 0%, #0b0f1a 55%, #05070f 100%);display:grid;place-items:center;transition:opacity .6s ease;overflow:hidden}
+  .boot-stars{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+  .boot-star{position:absolute;width:3px;height:3px;background:white;border-radius:50%;box-shadow:0 0 8px white;animation:bootTwinkle 2s ease-in-out infinite}
+  @keyframes bootTwinkle{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.3)}}
+  .boot-comet{position:absolute;height:2px;width:120px;background:linear-gradient(90deg,transparent,rgba(190,210,255,.9));border-radius:2px;filter:drop-shadow(0 0 6px rgba(190,210,255,.8));animation:bootCometFall linear infinite}
+  .boot-comet::after{content:"";position:absolute;right:0;top:-1px;width:6px;height:6px;background:white;border-radius:50%;box-shadow:0 0 12px white,0 0 20px rgba(190,210,255,.9)}
+  @keyframes bootCometFall{0%{transform:translate(-150px,-50px) rotate(35deg);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translate(calc(100vw + 150px),100vh) rotate(35deg);opacity:0}}
+  #globalFriendNotif{position:fixed;top:20px;right:20px;z-index:450;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;padding:14px 20px;border-radius:14px;box-shadow:0 10px 40px rgba(99,102,241,.5);font-size:14px;font-weight:700;display:flex;align-items:center;gap:10px;transform:translateX(calc(100% + 30px));transition:transform .4s cubic-bezier(.4,1.4,.6,1);pointer-events:none;max-width:340px}
+  #globalFriendNotif.show{transform:translateX(0)}
+  #globalFriendNotif .notif-icon{font-size:22px;flex-shrink:0}
+  .invite-friend-list{max-height:300px;overflow-y:auto;margin:14px 0;text-align:left}
+  .invite-friend-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:var(--tile-bg);border:1px solid var(--line);margin-bottom:6px}
+  .invite-friend-item .friend-avatar{width:36px;height:36px;font-size:18px}
+  .invite-friend-item .friend-info{flex:1;min-width:0}
+  .invite-friend-item .friend-name{font-weight:700;font-size:13px}
+  .invite-friend-item .friend-status{font-size:11px;color:var(--muted)}
+  .invite-friend-item button{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700}
+  .opponent-info{background:linear-gradient(135deg,rgba(239,68,68,.12),rgba(249,115,22,.12));border:1px solid rgba(239,68,68,.35);border-radius:12px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:12px}
+  .opponent-info .avatar-mini{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#ef4444,#f97316);display:grid;place-items:center;font-size:16px}
+  .opponent-info .info-text{flex:1;line-height:1.4}
+  .opponent-info .info-text b{color:var(--txt)}
+  .opponent-info .info-text span{color:var(--muted);font-size:11px}
 </style>
 </head>
 <body>
@@ -511,10 +541,12 @@
 <div class="sun sky-object"></div>
 
 <div id="bootLoader">
-  <div style="text-align:center">
-    <div class="emoji-big" style="animation:pulseBadge 1.2s ease-in-out infinite">⚡</div>
-    <div style="color:var(--muted);font-size:13px;margin-top:10px">Loading...</div>
-  </div>
+  <div class="boot-stars" id="bootStars"></div>
+</div>
+
+<div id="globalFriendNotif">
+  <span class="notif-icon">👥</span>
+  <span id="globalFriendNotifText">New friend request!</span>
 </div>
 
 <div class="wrap">
@@ -605,6 +637,14 @@
           </div>
         </div>
 
+        <div class="opponent-info" id="opponentInfo" style="display:none">
+          <div class="avatar-mini" id="opAvatarMini">👤</div>
+          <div class="info-text">
+            <b id="opNameMini">Opponent</b>
+            <br><span id="opStatusMini">Waiting...</span>
+          </div>
+        </div>
+
         <div class="timer-bar" id="timerBar">
           <div class="timer-bar-inner">
             <span>TIME LEFT</span>
@@ -616,7 +656,7 @@
         </div>
 
         <div class="hint" id="gameHint"></div>
-        <div class="attempts-wrap">
+        <div class="attempts-wrap" id="attemptsWrap">
           <div class="attempts" id="attempts"></div>
         </div>
 
@@ -646,9 +686,9 @@
     <div class="emoji-big">⚡</div>
     <h2>Welcome to Word Strike</h2>
     <p>Enter your name to begin</p>
-    <input type="text" id="nameInput" maxlength="14" placeholder="Your name (letters, numbers, _)" autocomplete="off"/>
+    <input type="text" id="nameInput" maxlength="14" placeholder="Your Name" autocomplete="off"/>
     <div class="feedback" id="nameFeedback"></div>
-    <button class="primary" id="nameNextBtn">Continue →</button>
+    <button class="primary" id="nameNextBtn">Continue</button>
   </div>
 </div>
 
@@ -658,7 +698,7 @@
     <h2 id="avatarModalTitle">Pick Your Avatar</h2>
     <p>Choose a character to represent you</p>
     <div class="avatar-grid" id="avatarGrid"></div>
-    <button class="primary" id="avatarNextBtn" disabled>Confirm 🚀</button>
+    <button class="primary" id="avatarNextBtn" disabled>Confirm</button>
   </div>
 </div>
 
@@ -697,13 +737,13 @@
 
     <div class="add-friend-row">
       <input type="text" id="friendNameInput" maxlength="20" placeholder="Friend's username" autocomplete="off"/>
-      <button id="addFriendBtn">➕ Add</button>
+      <button id="addFriendBtn">Add</button>
     </div>
     <div class="feedback" id="friendFeedback"></div>
 
     <div class="friends-tabs">
-      <button class="friends-tab active" data-ftab="friends">👫 My Friends</button>
-      <button class="friends-tab" data-ftab="requests">📨 Requests <span id="reqCount"></span></button>
+      <button class="friends-tab active" data-ftab="friends">My Friends</button>
+      <button class="friends-tab" data-ftab="requests">Requests <span id="reqCount"></span></button>
     </div>
 
     <div class="friends-list" id="friendsList"></div>
@@ -728,7 +768,7 @@
     <p>Enter the 6-character code from your friend</p>
     <div class="join-inputs" id="joinInputs"></div>
     <div class="feedback" id="joinFeedback"></div>
-    <button class="primary" id="joinConfirmBtn" style="margin-top:12px">Join Session →</button>
+    <button class="primary" id="joinConfirmBtn" style="margin-top:12px">Join Session</button>
     <button class="ghost" id="joinCancelBtn" style="width:100%;margin-top:8px;color:var(--txt)">Cancel</button>
   </div>
 </div>
@@ -741,12 +781,32 @@
     <div class="code-display" id="codeDisplay">------</div>
     <div class="code-hint">Tap the code to select all</div>
     <div class="share-actions" style="margin-top:8px">
-      <button class="green" id="copyCodeBtn">📋 Copy Code</button>
-      <button class="ghost" id="shareCodeBtn" style="color:var(--txt)">📤 Share</button>
+      <button class="green" id="copyCodeBtn">Copy Code</button>
+      <button class="ghost" id="shareCodeBtn" style="color:var(--txt)">Share</button>
     </div>
+    <button class="primary" id="inviteFriendBtn" style="margin-top:14px;background:linear-gradient(135deg,#22c55e,#10b981)">Invite a Friend</button>
     <div class="feedback" id="waitingFeedback" style="margin-top:12px"></div>
-    <button class="primary green" id="startSessionBtn" style="margin-top:14px">▶ Start My Round</button>
-    <button class="ghost" id="cancelWaitingBtn" style="width:100%;margin-top:8px;color:var(--txt)">← Back</button>
+    <button class="ghost" id="cancelWaitingBtn" style="width:100%;margin-top:8px;color:var(--txt)">Back</button>
+  </div>
+</div>
+
+<div class="modal hidden" id="inviteFriendModal">
+  <div class="modal-box" style="text-align:left">
+    <div class="emoji-big" style="text-align:center">✉️</div>
+    <h2 style="text-align:center">Invite a Friend</h2>
+    <p style="text-align:center;margin-bottom:14px">Pick an online friend to invite to your session</p>
+    <div class="invite-friend-list" id="inviteFriendList"></div>
+    <button class="ghost" id="closeInviteFriendBtn" style="width:100%;margin-top:8px;color:var(--txt)">Close</button>
+  </div>
+</div>
+
+<div class="modal hidden" id="incomingInviteModal">
+  <div class="modal-box">
+    <div class="emoji-big">🎮</div>
+    <h2>Game Invite</h2>
+    <p id="incomingInviteText">Your friend invited you to play!</p>
+    <button class="primary green" id="acceptInviteBtn">Accept</button>
+    <button class="ghost" id="declineInviteBtn" style="width:100%;margin-top:8px;color:var(--txt)">Decline</button>
   </div>
 </div>
 
@@ -756,8 +816,8 @@
     <h2>Shop</h2>
     <p>Spend your coins wisely <span style="color:var(--coin);font-weight:800">🪙 <span id="shopCoinVal">0</span></span></p>
     <div class="shop-tabs">
-      <button class="shop-tab active" data-tab="multipliers">⚡ Multipliers</button>
-      <button class="shop-tab" data-tab="frames">💍 Frames</button>
+      <button class="shop-tab active" data-tab="multipliers">Multipliers</button>
+      <button class="shop-tab" data-tab="frames">Frames</button>
     </div>
     <div class="shop-grid" id="shopGrid"></div>
     <button class="primary" id="closeShopBtn" style="width:100%;margin-top:16px;background:transparent;border:1px solid var(--line);color:var(--muted)">Close</button>
@@ -775,6 +835,10 @@ let onlineUsers = new Set();
 let presenceChannel = null;
 let leaderboardChannel = null;
 let friendsChannel = null;
+let gameInviteChannel = null;
+let roomChannel = null;
+let globalNotifTimer = null;
+let activeInvite = null;
 
 const WORDS = {
   3: ["CAT","DOG","SUN","RUN","BIG","RED","TOP","FLY","JOY","KEY","ICE","SKY","ARM","BED","CUP","EGG","FOX","GAP","HAT","INK","JAM","KIT","LOG","MAP","NET","OAK","PIG","RAT","SEA","TEA","VAN","WAX","YES","ZOO","BAT","COW","DEW","ELF","FAN","GUM","HUG","IVY","JAR","LAB","MUD","NAP","OWL","PEN","RUG","AIR","BAG","CAP","DIG","EAR","FIT","GAS","HEN","JOB","KID","LID","MAN","NEW","OIL","POT","RIB","SIP","TIP","URN","VET","WEB","YAK","ZAP","ANT","BOY","CRY","DAY","EYE","FUR","GYM","HOP","ILL","JOG","KEG","LAW","MIX","NOD","ODD","PAW","RAW","SAW","TAG","USE","VOW","WAR","YAM","ZIG"],
@@ -872,7 +936,12 @@ let game = {
   friendTotalTime:0,
   friendSessionCode:"",
   liveScore:0,
-  wrongTries:0
+  wrongTries:0,
+  opponentName:"",
+  opponentTime:0,
+  opponentTries:0,
+  opponentFinished:false,
+  myFinished:false
 };
 
 let leaderboard = [];
@@ -949,6 +1018,31 @@ function validateUsername(name){
     return { ok:false, msg:"Only letters, numbers, and _ (must start with a letter)" };
   }
   return { ok:true };
+}
+
+function initBootLoader(){
+  const starsEl = document.getElementById("bootStars");
+  if(!starsEl) return;
+  for(let i=0; i<60; i++){
+    const star = document.createElement("div");
+    star.className = "boot-star";
+    star.style.left = Math.random()*100 + "%";
+    star.style.top = Math.random()*100 + "%";
+    star.style.animationDelay = (Math.random()*2) + "s";
+    const size = 1 + Math.random()*2.5;
+    star.style.width = size + "px";
+    star.style.height = size + "px";
+    starsEl.appendChild(star);
+  }
+  for(let i=0; i<5; i++){
+    const comet = document.createElement("div");
+    comet.className = "boot-comet";
+    comet.style.top = (10 + Math.random()*40) + "%";
+    comet.style.left = "-20%";
+    comet.style.animationDuration = (2.5 + Math.random()*2) + "s";
+    comet.style.animationDelay = (i*1.2 + Math.random()) + "s";
+    starsEl.appendChild(comet);
+  }
 }
 
 async function initAuth(){
@@ -1069,6 +1163,9 @@ function setupUIForPlayer(){
   initPresence();
   loadLeaderboardRealtime();
   startMultTimerUI();
+  startFriendRequestListener();
+  startGameInviteListener();
+  updateFriendBadgeCount();
 }
 
 function applyTheme(theme){
@@ -1603,6 +1700,7 @@ function renderHostSetup(body){
 
 async function createSession(){
   const words = buildWordList(sessionSetup.challengeType, sessionSetup.rounds);
+  const code = genSessionCode();
   game.friendWords = words;
   game.friendRoundIdx = 0;
   game.friendRounds = sessionSetup.rounds;
@@ -1612,11 +1710,32 @@ async function createSession(){
   game.friend = true;
   game.friendTotalTime = 0;
   game.friendStartTime = 0;
+  game.friendSessionCode = code;
   game.category = CATEGORIES.find(c => c.id === "friend");
   game.timed = false;
   game.tries = [];
   game.over = false;
+  game.friendSessionTotalTries = 0;
+  game.myFinished = false;
+  game.opponentFinished = false;
+
+  const { error } = await supabaseClient.from("game_rooms").insert({
+    code,
+    host_id: currentUser.id,
+    host_name: state.name,
+    host_avatar: state.avatar,
+    options: sessionSetup,
+    words: words,
+    status: "waiting"
+  });
+
+  if(error){
+    alert("Could not create session: " + error.message);
+    return;
+  }
+
   document.getElementById("friendModal").classList.add("hidden");
+  listenToMyRoom(code);
   beginFriendRound();
 }
 
@@ -1643,130 +1762,179 @@ function beginFriendRound(){
   const modeLabel = game.friendMode === "time" ? "⏱️ Fastest time wins" : "🎯 Fewest tries wins";
   document.getElementById("gameHint").innerHTML =
     `🤝 <b>Round ${game.friendRoundIdx + 1}/${game.friendRounds}</b> — ${modeLabel} — <b>${word.length}-letter</b> word`;
+  showOpponentInfo();
   renderAttempts();
   input.focus();
 }
 
-function finishFriendSession(){
-  const isHost = game.friendHost;
-  const totalTime = game.friendTotalTime;
-  const totalTries = game.friendSessionTotalTries || 0;
-  const options = { challengeType: game.friendChallengeType, mode: game.friendMode, rounds: game.friendRounds };
-  if(isHost){
-    const code = genSessionCode();
-    game.friendSessionCode = code;
-    sessionStorage.setItem("ws_session_" + code, JSON.stringify({
-      words: game.friendWords,
-      options: options,
-      hostName: state.name,
-      hostTime: totalTime,
-      hostTries: totalTries
-    }));
-    const modal = document.getElementById("waitingModal");
-    document.getElementById("codeDisplay").textContent = code;
-    document.getElementById("waitingFeedback").className = "feedback";
-    modal.classList.remove("hidden");
-    document.getElementById("copyCodeBtn").onclick = async () => {
-      try{
-        await navigator.clipboard.writeText(code);
-        document.getElementById("copyCodeBtn").textContent = "✅ Copied!";
-        setTimeout(() => { document.getElementById("copyCodeBtn").textContent = "📋 Copy Code"; }, 2000);
-      }catch(e){
-        const range = document.createRange();
-        range.selectNode(document.getElementById("codeDisplay"));
-        window.getSelection().removeAllRanges();
-        window.getSelection().addRange(range);
-        document.execCommand("copy");
-        document.getElementById("copyCodeBtn").textContent = "✅ Copied!";
-        setTimeout(() => { document.getElementById("copyCodeBtn").textContent = "📋 Copy Code"; }, 2000);
-      }
-    };
-    document.getElementById("shareCodeBtn").onclick = async () => {
-      const shareText = `Join my Word Strike challenge! Code: ${code}`;
-      if(navigator.share){
-        try{ await navigator.share({ title:"Word Strike Challenge", text: shareText, url: window.location.origin + window.location.pathname }); }catch(e){}
-      } else { document.getElementById("copyCodeBtn").click(); }
-    };
-    document.getElementById("startSessionBtn").onclick = () => {
-      document.getElementById("waitingModal").classList.add("hidden");
-      backToCats();
-    };
-    document.getElementById("cancelWaitingBtn").onclick = () => {
-      document.getElementById("waitingModal").classList.add("hidden");
-      backToCats();
-    };
+function showOpponentInfo(){
+  const info = document.getElementById("opponentInfo");
+  if(!game.friend || !game.opponentName){
+    info.style.display = "none";
+    return;
+  }
+  info.style.display = "flex";
+  document.getElementById("opAvatarMini").textContent = game.opponentAvatar || "👤";
+  document.getElementById("opNameMini").textContent = game.opponentName;
+  const status = document.getElementById("opStatusMini");
+  if(game.opponentFinished){
+    status.textContent = "Finished! Time: " + Math.floor(game.opponentTime/1000) + "s";
+  } else {
+    status.textContent = "Playing...";
   }
 }
 
-function openJoinModal(){
-  const modal = document.getElementById("joinModal");
-  const inputs = document.getElementById("joinInputs");
-  inputs.innerHTML = "";
-  for(let i=0; i<6; i++){
-    const inp = document.createElement("input");
-    inp.type = "text";
-    inp.maxLength = 1;
-    inp.className = "join-char";
-    inp.dataset.idx = i;
-    inp.autocomplete = "off";
-    inputs.appendChild(inp);
-    inp.addEventListener("input", e => {
-      e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
-      if(e.target.value && i < 5){ inputs.children[i+1].focus(); }
-      e.target.classList.toggle("filled", !!e.target.value);
-    });
-    inp.addEventListener("keydown", e => {
-      if(e.key === "Backspace" && !e.target.value && i > 0){ inputs.children[i-1].focus(); }
-    });
-  }
-  document.getElementById("joinFeedback").className = "feedback";
+async function finishFriendSession(){
+  const code = game.friendSessionCode;
+  if(!code) return;
+  game.myFinished = true;
+
+  await supabaseClient.from("game_rooms").update({
+    host_total_time: game.friendTotalTime,
+    host_total_tries: game.friendSessionTotalTries || 0,
+    host_finished: true,
+    status: game.opponentFinished ? "finished" : "playing"
+  }).eq("code", code);
+
+  const modal = document.getElementById("waitingModal");
+  document.getElementById("codeDisplay").textContent = code;
+  document.getElementById("waitingFeedback").className = "feedback";
+  document.getElementById("waitingFeedback").textContent = "Waiting for opponent to finish...";
+  document.getElementById("waitingFeedback").className = "feedback show warn";
   modal.classList.remove("hidden");
-  setTimeout(() => inputs.children[0]?.focus(), 200);
+
+  document.getElementById("copyCodeBtn").onclick = async () => {
+    try{
+      await navigator.clipboard.writeText(code);
+      document.getElementById("copyCodeBtn").textContent = "Copied!";
+      setTimeout(() => { document.getElementById("copyCodeBtn").textContent = "Copy Code"; }, 2000);
+    }catch(e){}
+  };
+
+  document.getElementById("shareCodeBtn").onclick = async () => {
+    const shareText = `Join my Word Strike challenge! Code: ${code}`;
+    if(navigator.share){
+      try{ await navigator.share({ title: "Word Strike Challenge", text: shareText }); }catch(e){}
+    } else { document.getElementById("copyCodeBtn").click(); }
+  };
+
+  document.getElementById("inviteFriendBtn").onclick = () => openInviteFriendModal(code);
+
+  document.getElementById("cancelWaitingBtn").onclick = () => {
+    document.getElementById("waitingModal").classList.add("hidden");
+    backToCats();
+  };
 }
 
-function tryJoinSession(){
+async function tryJoinSession(){
   const inputs = document.getElementById("joinInputs");
   let code = "";
   for(let i=0; i<6; i++) code += inputs.children[i].value.toUpperCase();
   if(code.length !== 6){ showJoinFeedback("⚠️ Please enter all 6 characters", "warn"); return; }
-  const stored = sessionStorage.getItem("ws_session_" + code);
-  if(!stored){
-    showJoinFeedback("❌ Code not found. Ask your friend to share it again from the same browser.", "err");
-    return;
-  }
-  let data;
-  try{ data = JSON.parse(stored); }catch(e){
-    showJoinFeedback("❌ Invalid session data", "err");
-    return;
-  }
-  document.getElementById("joinModal").classList.add("hidden");
-  startJoinerSession(data);
+  await joinSessionByCode(code);
 }
+
+async function joinSessionByCode(code){
+  const { data: room, error } = await supabaseClient
+    .from("game_rooms")
+    .select("*")
+    .eq("code", code)
+    .maybeSingle();
+
+  if(error || !room){
+    showJoinFeedback("❌ Room not found. Check the code.", "err");
+    return;
+  }
+
+  if(room.host_id === currentUser.id){
+    showJoinFeedback("❌ This is your own room", "err");
+    return;
+  }
+
+  if(room.guest_id && room.guest_id !== currentUser.id){
+    showJoinFeedback("❌ Room is full", "err");
+    return;
+  }
+
+  const { error: joinErr } = await supabaseClient.from("game_rooms").update({
+    guest_id: currentUser.id,
+    guest_name: state.name,
+    guest_avatar: state.avatar,
+    status: "playing"
+  }).eq("code", code);
+
+  if(joinErr){
+    showJoinFeedback("❌ Could not join: " + joinErr.message, "err");
+    return;
+  }
+
+  document.getElementById("joinModal").classList.add("hidden");
+  document.getElementById("incomingInviteModal").classList.add("hidden");
+  startJoinerSession({ ...room, guest_name: state.name, guest_avatar: state.avatar });
+}
+
 function showJoinFeedback(text, type){
   const fb = document.getElementById("joinFeedback");
   fb.textContent = text;
   fb.className = "feedback show " + type;
 }
 
-function startJoinerSession(data){
-  game.friendWords = data.words;
+function startJoinerSession(room){
+  game.friendWords = room.words;
   game.friendRoundIdx = 0;
-  game.friendRounds = data.options.rounds;
-  game.friendMode = data.options.mode;
-  game.friendChallengeType = data.options.challengeType;
+  game.friendRounds = room.options.rounds;
+  game.friendMode = room.options.mode;
+  game.friendChallengeType = room.options.challengeType;
   game.friendHost = false;
   game.friend = true;
   game.friendTotalTime = 0;
   game.friendStartTime = 0;
-  game.opponentName = data.hostName;
-  game.opponentTime = data.hostTime;
-  game.opponentTries = data.hostTries;
+  game.friendSessionCode = room.code;
+  game.opponentName = room.host_name;
+  game.opponentAvatar = room.host_avatar || "👤";
+  game.opponentTime = 0;
+  game.opponentTries = 0;
   game.category = CATEGORIES.find(c => c.id === "friend");
   game.timed = false;
   game.tries = [];
   game.over = false;
   game.friendSessionTotalTries = 0;
+  game.myFinished = false;
+  game.opponentFinished = false;
+  listenToMyRoom(room.code);
   beginFriendRound();
+}
+
+function listenToMyRoom(code){
+  if(roomChannel) supabaseClient.removeChannel(roomChannel);
+  roomChannel = supabaseClient
+    .channel("room-" + code)
+    .on("postgres_changes",
+      { event: "UPDATE", schema: "public", table: "game_rooms", filter: `code=eq.${code}` },
+      (payload) => {
+        const room = payload.new;
+        if(!room) return;
+        if(game.friendHost){
+          game.opponentName = room.guest_name || game.opponentName;
+          game.opponentAvatar = room.guest_avatar || game.opponentAvatar;
+          game.opponentTime = room.guest_total_time || 0;
+          game.opponentTries = room.guest_total_tries || 0;
+          game.opponentFinished = !!room.guest_finished;
+        } else {
+          game.opponentName = room.host_name || game.opponentName;
+          game.opponentAvatar = room.host_avatar || game.opponentAvatar;
+          game.opponentTime = room.host_total_time || 0;
+          game.opponentTries = room.host_total_tries || 0;
+          game.opponentFinished = !!room.host_finished;
+        }
+        showOpponentInfo();
+        if(game.myFinished && game.opponentFinished){
+          document.getElementById("waitingModal").classList.add("hidden");
+          setTimeout(() => showFinalCompare(), 300);
+        }
+      }
+    )
+    .subscribe();
 }
 
 function showFinalCompare(){
@@ -1817,6 +1985,92 @@ function showFinalCompare(){
   };
 }
 
+async function openInviteFriendModal(code){
+  const modal = document.getElementById("inviteFriendModal");
+  const listEl = document.getElementById("inviteFriendList");
+  listEl.innerHTML = '<div style="text-align:center;color:var(--muted);padding:14px;font-size:13px">Loading...</div>';
+  modal.classList.remove("hidden");
+
+  const { data: friendships } = await supabaseClient
+    .from("friendships")
+    .select("*")
+    .or(`requester_id.eq.${currentUser.id},addressee_id.eq.${currentUser.id}`)
+    .eq("status", "accepted");
+
+  if(!friendships || friendships.length === 0){
+    listEl.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">You have no friends yet.</div>';
+    return;
+  }
+
+  const ids = friendships.map(f => f.requester_id === currentUser.id ? f.addressee_id : f.requester_id);
+  const { data: profiles } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .in("id", ids);
+
+  const onlineFriends = (profiles || []).filter(p => onlineUsers.has(p.id));
+
+  if(onlineFriends.length === 0){
+    listEl.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">No friends online right now.</div>';
+    return;
+  }
+
+  listEl.innerHTML = "";
+  onlineFriends.forEach(p => {
+    const div = document.createElement("div");
+    div.className = "invite-friend-item";
+    div.innerHTML = `
+      <div class="friend-avatar">${p.avatar || DEFAULT_AVATAR}</div>
+      <div class="friend-info">
+        <div class="friend-name"><span class="online-dot"></span>${p.username}</div>
+        <div class="friend-status">Online</div>
+      </div>
+      <button data-invite="1">Invite</button>
+    `;
+    div.querySelector("[data-invite]").onclick = () => sendGameInvite(p.id, code);
+    listEl.appendChild(div);
+  });
+}
+
+async function sendGameInvite(friendId, code){
+  const channel = supabaseClient.channel("game-invite-" + friendId, {
+    config: { broadcast: { self: false } }
+  });
+  await channel.subscribe();
+  await channel.send({
+    type: "broadcast",
+    event: "game-invite",
+    payload: {
+      fromId: currentUser.id,
+      fromName: state.name,
+      fromAvatar: state.avatar,
+      code: code
+    }
+  });
+  setTimeout(() => supabaseClient.removeChannel(channel), 3000);
+  document.getElementById("inviteFriendModal").classList.add("hidden");
+  showGlobalFriendNotif("Invitation sent!");
+  SFX.notify();
+}
+
+function startGameInviteListener(){
+  if(gameInviteChannel) supabaseClient.removeChannel(gameInviteChannel);
+  gameInviteChannel = supabaseClient
+    .channel("game-invite-" + currentUser.id, {
+      config: { broadcast: { self: false } }
+    })
+    .on("broadcast", { event: "game-invite" }, (payload) => {
+      const data = payload.payload;
+      if(!data || !data.code) return;
+      activeInvite = data;
+      document.getElementById("incomingInviteText").textContent =
+        `${data.fromName} invited you to play Word Strike!`;
+      document.getElementById("incomingInviteModal").classList.remove("hidden");
+      SFX.notify();
+    })
+    .subscribe();
+}
+
 function confettiBurst(){
   const colors = ["#22c55e","#fbbf24","#6366f1","#8b5cf6","#f472b6","#38bdf8"];
   for(let i=0; i<40; i++){
@@ -1841,6 +2095,7 @@ function startGame(cat){
   game.friend = false;
   game.wrongTries = 0;
   game.liveScore = 0;
+  document.getElementById("opponentInfo").style.display = "none";
   if(cat.timed){ startTimedGame(); return; }
   document.getElementById("timerBar").classList.remove("active");
   let word;
@@ -1891,6 +2146,7 @@ function startTimedGame(){
   document.getElementById("winArea").innerHTML = "";
   document.getElementById("feedback").className = "feedback";
   document.getElementById("liveScoreBox").style.display = "none";
+  document.getElementById("opponentInfo").style.display = "none";
   const input = document.getElementById("guessInput");
   input.disabled = false;
   document.getElementById("guessBtn").disabled = false;
@@ -2035,6 +2291,7 @@ function endTimedGame(){
 
 function renderAttempts(){
   const container = document.getElementById("attempts");
+  const wrap = document.getElementById("attemptsWrap");
   if(!container) return;
   container.innerHTML = "";
   const total = game.tries.length;
@@ -2054,12 +2311,8 @@ function renderAttempts(){
     container.appendChild(row);
   });
   requestAnimationFrame(() => {
-    const wrap = container.parentElement;
     if(wrap){
-      const wrapH = wrap.clientHeight;
-      const contentH = container.scrollHeight;
-      if(contentH > wrapH){ container.style.transform = `translateY(-${contentH - wrapH}px)`; }
-      else { container.style.transform = "translateY(0)"; }
+      wrap.scrollTop = wrap.scrollHeight;
     }
   });
 }
@@ -2256,7 +2509,7 @@ function animateWinTiles(){
   });
 }
 
-function handleFriendRoundWin(){
+async function handleFriendRoundWin(){
   const input = document.getElementById("guessInput");
   input.disabled = true;
   document.getElementById("guessBtn").disabled = true;
@@ -2268,30 +2521,33 @@ function handleFriendRoundWin(){
   const totalRounds = game.friendRounds;
   SFX.correct();
   showFeedback(`🎉 Round ${roundIdx+1} solved!`, "ok");
-  setTimeout(() => {
+  setTimeout(async () => {
     if(roundIdx + 1 < totalRounds){
       game.friendRoundIdx++;
       beginFriendRound();
     } else {
       const coins = game.category.coins;
       addCoins(coins);
-      if(game.friendHost){ finishFriendSession(); }
-      else { showFinalCompare(); }
+      await finishFriendSession();
     }
   }, 800);
 }
 
 function backToCats(){
   if(timedState){ clearInterval(timedState.timer); timedState = null; }
+  if(roomChannel){ supabaseClient.removeChannel(roomChannel); roomChannel = null; }
   document.getElementById("timerBar").classList.remove("active");
   document.getElementById("gameView").style.display = "none";
   document.getElementById("catView").style.display = "block";
   document.getElementById("liveScoreBox").style.display = "none";
+  document.getElementById("opponentInfo").style.display = "none";
   game.friend = false;
   game.friendHost = false;
   game.friendSessionTotalTries = 0;
   game.friendTotalTime = 0;
   game.friendRoundIdx = 0;
+  game.myFinished = false;
+  game.opponentFinished = false;
 }
 
 function openProfile(){
@@ -2316,8 +2572,21 @@ function openPlayerProfile(player){
   document.getElementById("pScore").textContent = player.score;
   document.getElementById("pWins").textContent = player.wins || 0;
   document.getElementById("pStreak").textContent = player.bestStreak || 0;
-  document.getElementById("pRank").textContent = "Rank #" + rank + (onlineUsers.has(player.id) ? " · 🟢 Online" : "");
+  document.getElementById("pRank").textContent = "Rank #" + rank + (onlineUsers.has(player.id) ? " · Online" : "");
   renderBadgesAndCats(player.badges || [], player.catWins || {});
+  document.getElementById("profileModal").classList.remove("hidden");
+}
+
+function openUserProfileFromFriends(profile){
+  const rank = leaderboard.findIndex(p => p.id === profile.id);
+  document.getElementById("changeAvatarBtn").style.display = "none";
+  document.getElementById("pAvatar").textContent = profile.avatar || DEFAULT_AVATAR;
+  document.getElementById("pName").textContent = profile.username;
+  document.getElementById("pScore").textContent = profile.score || 0;
+  document.getElementById("pWins").textContent = profile.wins || 0;
+  document.getElementById("pStreak").textContent = profile.best_streak || 0;
+  document.getElementById("pRank").textContent = rank >= 0 ? ("Rank #" + (rank + 1) + (onlineUsers.has(profile.id) ? " · Online" : "")) : "Unranked";
+  renderBadgesAndCats(profile.badges || [], profile.cat_wins || {});
   document.getElementById("profileModal").classList.remove("hidden");
 }
 
@@ -2335,9 +2604,9 @@ function renderBadgesAndCats(badges, catWins){
   const cs = document.getElementById("pCatStats");
   cs.innerHTML = "";
   const catLabels = {
-    3: "🟢 Easy Words", 4: "🟡 Medium Words", 5: "🟠 Hard Words",
-    6: "🔴 Expert Words", timed: "⏱️ Time Attack",
-    friend: "🤝 Friend Challenge", random: "🎲 Random Challenge"
+    3: "Easy Words", 4: "Medium Words", 5: "Hard Words",
+    6: "Expert Words", timed: "Time Attack",
+    friend: "Friend Challenge", random: "Random Challenge"
   };
   Object.keys(catLabels).forEach(k => {
     const wins = (catWins && catWins[k]) || 0;
@@ -2372,23 +2641,58 @@ function initPresence(){
     });
 }
 
+let friendRequestChannel = null;
+function startFriendRequestListener(){
+  if(friendRequestChannel) supabaseClient.removeChannel(friendRequestChannel);
+  friendRequestChannel = supabaseClient
+    .channel("global-friend-requests-" + currentUser.id)
+    .on("postgres_changes",
+      { event: "INSERT", schema: "public", table: "friendships", filter: `addressee_id=eq.${currentUser.id}` },
+      async (payload) => {
+        const newRow = payload.new;
+        if(newRow && newRow.status === "pending"){
+          await updateFriendBadgeCount();
+          showGlobalFriendNotif("New friend request!");
+          SFX.notify();
+        }
+      }
+    )
+    .subscribe();
+}
+
+async function updateFriendBadgeCount(){
+  if(!currentUser) return;
+  const { count, error } = await supabaseClient
+    .from("friendships")
+    .select("*", { count: "exact", head: true })
+    .eq("addressee_id", currentUser.id)
+    .eq("status", "pending");
+  if(error) return;
+  const notif = document.getElementById("friendNotif");
+  if(count && count > 0){
+    notif.textContent = count;
+    notif.classList.remove("hidden");
+  } else {
+    notif.classList.add("hidden");
+  }
+}
+
+function showGlobalFriendNotif(text){
+  const el = document.getElementById("globalFriendNotif");
+  const txt = document.getElementById("globalFriendNotifText");
+  if(!el) return;
+  txt.textContent = text;
+  el.classList.add("show");
+  if(globalNotifTimer) clearTimeout(globalNotifTimer);
+  globalNotifTimer = setTimeout(() => {
+    el.classList.remove("show");
+  }, 4000);
+}
+
 function openFriendsModal(){
   document.getElementById("friendsModal").classList.remove("hidden");
   document.getElementById("friendFeedback").className = "feedback";
   loadFriendsUI();
-  listenFriendRequests();
-}
-
-let friendsListenerChannel = null;
-function listenFriendRequests(){
-  if(friendsListenerChannel) supabaseClient.removeChannel(friendsListenerChannel);
-  friendsListenerChannel = supabaseClient
-    .channel("friend-requests-" + currentUser.id)
-    .on("postgres_changes",
-      { event: "*", schema: "public", table: "friendships", filter: `addressee_id=eq.${currentUser.id}` },
-      () => { loadFriendsUI(); showFriendNotif(); }
-    )
-    .subscribe();
 }
 
 async function loadFriendsUI(){
@@ -2428,15 +2732,19 @@ async function loadFriendsUI(){
     (profiles || []).forEach(p => {
       const isOnline = onlineUsers.has(p.id);
       const div = document.createElement("div");
-      div.className = "friend-item" + (isOnline ? " online" : "");
+      div.className = "friend-item clickable" + (isOnline ? " online" : "");
       div.innerHTML = `
         <div class="friend-avatar">${p.avatar || DEFAULT_AVATAR}</div>
         <div class="friend-info">
           <div class="friend-name"><span class="online-dot ${isOnline?'':'offline'}"></span>${p.username}</div>
           <div class="friend-status">Score: ${p.score} · ${isOnline ? "Online" : "Offline"}</div>
         </div>
-        <button class="friend-action" data-challenge="${p.id}">Challenge</button>
+        <button class="friend-action" data-challenge="1">Challenge</button>
       `;
+      div.onclick = (e) => {
+        if(e.target.classList.contains("friend-action")) return;
+        openUserProfileFromFriends(p);
+      };
       div.querySelector(".friend-action").onclick = (e) => {
         e.stopPropagation();
         challengeFriend(p);
@@ -2460,35 +2768,50 @@ async function loadFriendsUI(){
       const p = profileMap[f.requester_id];
       if(!p) return;
       const div = document.createElement("div");
-      div.className = "friend-item";
+      div.className = "friend-item clickable";
       div.innerHTML = `
         <div class="friend-avatar">${p.avatar || DEFAULT_AVATAR}</div>
         <div class="friend-info">
           <div class="friend-name">${p.username}</div>
           <div class="friend-status">wants to be your friend</div>
         </div>
-        <button class="friend-action" data-accept="${f.id}" style="background:linear-gradient(135deg,#22c55e,#10b981)">Accept</button>
-        <button class="friend-action" data-reject="${f.id}" style="background:linear-gradient(135deg,#ef4444,#dc2626)">✕</button>
+        <button class="friend-action" data-accept="1" style="background:linear-gradient(135deg,#22c55e,#10b981)">Accept</button>
+        <button class="friend-action reject" data-reject="1">✕</button>
       `;
-      div.querySelector(`[data-accept]`).onclick = () => respondFriendRequest(f.id, "accepted");
-      div.querySelector(`[data-reject]`).onclick = () => respondFriendRequest(f.id, "rejected");
+      div.onclick = (e) => {
+        if(e.target.classList.contains("friend-action")) return;
+        openUserProfileFromFriends(p);
+      };
+      div.querySelector("[data-accept]").onclick = (e) => {
+        e.stopPropagation();
+        respondFriendRequest(f.id, "accepted");
+      };
+      div.querySelector("[data-reject]").onclick = (e) => {
+        e.stopPropagation();
+        respondFriendRequest(f.id, "rejected");
+      };
       listEl.appendChild(div);
     });
     sent.forEach(f => {
       const p = profileMap[f.addressee_id];
       if(!p) return;
       const div = document.createElement("div");
-      div.className = "friend-item";
-      div.style.opacity = ".7";
+      div.className = "friend-item clickable";
+      div.style.opacity = ".75";
       div.innerHTML = `
         <div class="friend-avatar">${p.avatar || DEFAULT_AVATAR}</div>
         <div class="friend-info">
           <div class="friend-name">${p.username}</div>
           <div class="friend-status">Request sent · pending</div>
         </div>
-        <button class="friend-action" data-cancel="${f.id}" style="background:rgba(239,68,68,.2);color:#fca5a5">Cancel</button>
+        <button class="friend-action reject" data-cancel="1">Cancel</button>
       `;
-      div.querySelector(`[data-cancel]`).onclick = async () => {
+      div.onclick = (e) => {
+        if(e.target.classList.contains("friend-action")) return;
+        openUserProfileFromFriends(p);
+      };
+      div.querySelector("[data-cancel]").onclick = async (e) => {
+        e.stopPropagation();
         await supabaseClient.from("friendships").delete().eq("id", f.id);
         loadFriendsUI();
       };
@@ -2538,7 +2861,7 @@ async function addFriend(){
     .from("friendships")
     .insert({ requester_id: currentUser.id, addressee_id: profile.id, status: "pending" });
   if(insErr){
-    fb.textContent = "❌ Could not send request";
+    fb.textContent = "❌ Could not send request: " + insErr.message;
     fb.className = "feedback show err";
     return;
   }
@@ -2551,26 +2874,91 @@ async function addFriend(){
 
 async function respondFriendRequest(id, status){
   if(status === "rejected"){
-    await supabaseClient.from("friendships").delete().eq("id", id);
+    const { error } = await supabaseClient.from("friendships").delete().eq("id", id);
+    if(error){ console.error("Reject error:", error); return; }
   } else {
-    await supabaseClient.from("friendships").update({ status: "accepted", updated_at: new Date().toISOString() }).eq("id", id);
+    const { error } = await supabaseClient.from("friendships")
+      .update({ status: "accepted", updated_at: new Date().toISOString() })
+      .eq("id", id);
+    if(error){ console.error("Accept error:", error); return; }
   }
   SFX.notify();
   loadFriendsUI();
+  updateFriendBadgeCount();
 }
 
 async function challengeFriend(profile){
   if(!onlineUsers.has(profile.id)){
-    alert(profile.username + " is offline right now. Challenge them anyway via a code!");
+    showGlobalFriendNotif(profile.username + " is offline");
     return;
   }
-  openHostSetup();
+
+  const words = buildWordList("4", 5);
+  const code = genSessionCode();
+  game.friendWords = words;
+  game.friendRoundIdx = 0;
+  game.friendRounds = 5;
+  game.friendMode = "time";
+  game.friendChallengeType = "4";
+  game.friendHost = true;
+  game.friend = true;
+  game.friendTotalTime = 0;
+  game.friendStartTime = 0;
+  game.friendSessionCode = code;
+  game.category = CATEGORIES.find(c => c.id === "friend");
+  game.timed = false;
+  game.tries = [];
+  game.over = false;
+  game.friendSessionTotalTries = 0;
+  game.opponentName = profile.username;
+  game.opponentAvatar = profile.avatar || "👤";
+  game.opponentTime = 0;
+  game.opponentTries = 0;
+  game.myFinished = false;
+  game.opponentFinished = false;
+
+  const { error } = await supabaseClient.from("game_rooms").insert({
+    code,
+    host_id: currentUser.id,
+    host_name: state.name,
+    host_avatar: state.avatar,
+    guest_id: profile.id,
+    guest_name: profile.username,
+    guest_avatar: profile.avatar,
+    options: { challengeType: "4", mode: "time", rounds: 5 },
+    words: words,
+    status: "waiting"
+  });
+
+  if(error){
+    showGlobalFriendNotif("Could not create room");
+    return;
+  }
+
+  await sendGameInvite(profile.id, code);
+  document.getElementById("friendsModal").classList.add("hidden");
+  listenToMyRoom(code);
+  beginFriendRound();
 }
 
-function showFriendNotif(){
+async function sendGameInvite(friendId, code){
+  const channel = supabaseClient.channel("game-invite-" + friendId, {
+    config: { broadcast: { self: false } }
+  });
+  await channel.subscribe();
+  await channel.send({
+    type: "broadcast",
+    event: "game-invite",
+    payload: {
+      fromId: currentUser.id,
+      fromName: state.name,
+      fromAvatar: state.avatar,
+      code: code
+    }
+  });
+  setTimeout(() => supabaseClient.removeChannel(channel), 3000);
+  showGlobalFriendNotif("Invitation sent!");
   SFX.notify();
-  const notif = document.getElementById("friendNotif");
-  notif.classList.remove("hidden");
 }
 
 let tempName = "";
@@ -2598,10 +2986,10 @@ function openAvatarModal(mode){
   const btn = document.getElementById("avatarNextBtn");
   const title = document.getElementById("avatarModalTitle");
   if(mode === "change"){
-    btn.textContent = "Save Changes ✓";
+    btn.textContent = "Save Changes";
     title.textContent = "Change Your Avatar";
   } else {
-    btn.textContent = "Confirm 🚀";
+    btn.textContent = "Confirm";
     title.textContent = "Pick Your Avatar";
   }
   btn.disabled = true;
@@ -2777,6 +3165,20 @@ function bindEvents(){
   document.getElementById("shopModal").onclick = e => {
     if(e.target.id === "shopModal") e.currentTarget.classList.add("hidden");
   };
+  document.getElementById("inviteFriendModal").onclick = e => {
+    if(e.target.id === "inviteFriendModal") e.currentTarget.classList.add("hidden");
+  };
+  document.getElementById("closeInviteFriendBtn").onclick = () => document.getElementById("inviteFriendModal").classList.add("hidden");
+  document.getElementById("acceptInviteBtn").onclick = () => {
+    if(!activeInvite) return;
+    document.getElementById("incomingInviteModal").classList.add("hidden");
+    joinSessionByCode(activeInvite.code);
+    activeInvite = null;
+  };
+  document.getElementById("declineInviteBtn").onclick = () => {
+    document.getElementById("incomingInviteModal").classList.add("hidden");
+    activeInvite = null;
+  };
   document.getElementById("changeAvatarBtn").onclick = () => openAvatarModal("change");
   document.getElementById("guessInput").addEventListener("keypress", e => {
     if(e.key === "Enter") submitGuess();
@@ -2826,7 +3228,7 @@ function bindEvents(){
     btn.textContent = "Creating...";
     const result = await createProfile(tempName, tempAvatar);
     btn.disabled = false;
-    btn.textContent = "Confirm 🚀";
+    btn.textContent = "Confirm";
     if(!result.ok){
       alert(result.msg || "Failed to create account");
       return;
@@ -2840,6 +3242,7 @@ function bindEvents(){
 
 window.addEventListener("DOMContentLoaded", async () => {
   try{
+    initBootLoader();
     bindEvents();
     buildLogo();
     initStars();
@@ -2851,8 +3254,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   } finally {
     const loader = document.getElementById("bootLoader");
     if(loader){
-      loader.style.opacity = "0";
-      setTimeout(() => loader.remove(), 400);
+      setTimeout(() => {
+        loader.style.opacity = "0";
+        setTimeout(() => loader.remove(), 700);
+      }, 900);
     }
   }
 });
