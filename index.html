@@ -240,6 +240,7 @@
   #joinModal{z-index:260}
   #waitingModal{z-index:270}
   #shopModal{z-index:280}
+  #friendsModal{z-index:290}
   .modal-box{background:linear-gradient(180deg,var(--card-bg),var(--bg2));border:1px solid var(--line);border-radius:24px;padding:32px;max-width:520px;width:100%;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:up .4s cubic-bezier(.4,1.4,.6,1);max-height:90vh;overflow-y:auto;scrollbar-width:none;margin:auto;transition:background .4s ease, border-color .4s ease}
   .modal-box::-webkit-scrollbar{display:none}
   @keyframes up{from{transform:translateY(30px) scale(.95);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
@@ -380,6 +381,7 @@
     .avatar{width:24px;height:24px;font-size:14px}
     .theme-btn{width:36px;height:36px;font-size:16px}
     .shop-btn{width:36px;height:36px;font-size:18px}
+    .friends-btn{width:36px;height:36px;font-size:16px}
     .card{padding:16px;border-radius:16px}
     .cat-title{font-size:17px;margin-bottom:4px}
     .cat-sub{font-size:12px;margin-bottom:14px}
@@ -478,12 +480,42 @@
   .join-char, .duration-chip, .attempts-wrap, .timer-progress, .shop-tabs{
     transition:background .4s ease, border-color .4s ease, color .4s ease;
   }
+  .online-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;margin-right:4px;box-shadow:0 0 6px var(--green)}
+  .online-dot.offline{background:var(--muted);box-shadow:none}
+  .friend-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:var(--tile-bg);border:1px solid var(--line);cursor:pointer;transition:.2s;margin-bottom:6px}
+  .friend-item:hover{border-color:var(--accent);transform:translateX(3px)}
+  .friend-item.online{border-color:rgba(34,197,94,.4)}
+  .friend-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-size:18px;flex-shrink:0}
+  .friend-info{flex:1;min-width:0}
+  .friend-name{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .friend-status{font-size:11px;color:var(--muted)}
+  .friend-action{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:white;cursor:pointer}
+  .add-friend-row{display:flex;gap:8px;margin-bottom:14px}
+  .add-friend-row input{flex:1;padding:10px 14px;font-size:14px;letter-spacing:1px;margin:0}
+  .add-friend-row button{padding:10px 16px;font-size:13px;white-space:nowrap}
+  .friends-list{max-height:320px;overflow-y:auto;margin-bottom:14px}
+  .friends-list::-webkit-scrollbar{width:6px}
+  .friends-list::-webkit-scrollbar-thumb{background:var(--line);border-radius:10px}
+  .friends-tabs{display:flex;gap:6px;margin-bottom:12px;background:var(--tile-bg);padding:4px;border-radius:12px;border:1px solid var(--line)}
+  .friends-tab{flex:1;padding:8px;border-radius:8px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-weight:700;font-size:12px;transition:.2s}
+  .friends-tab.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white}
+  .notif-badge{position:absolute;top:-4px;right:-4px;background:var(--red);color:white;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:100px;display:grid;place-items:center;padding:0 4px;box-shadow:0 0 8px rgba(239,68,68,.6)}
+  .friends-btn{width:42px;height:42px;border-radius:50%;background:var(--card-bg);border:1px solid var(--line);color:var(--txt);font-size:18px;cursor:pointer;display:grid;place-items:center;padding:0;transition:.25s;position:relative}
+  .friends-btn:hover{transform:scale(1.08);border-color:var(--accent)}
+  #bootLoader{position:fixed;inset:0;z-index:500;background:var(--bg-solid);display:grid;place-items:center;transition:opacity .4s}
 </style>
 </head>
 <body>
 <canvas id="bgCanvas"></canvas>
 <div class="moon sky-object"></div>
 <div class="sun sky-object"></div>
+
+<div id="bootLoader">
+  <div style="text-align:center">
+    <div class="emoji-big" style="animation:pulseBadge 1.2s ease-in-out infinite">⚡</div>
+    <div style="color:var(--muted);font-size:13px;margin-top:10px">Loading...</div>
+  </div>
+</div>
 
 <div class="wrap">
   <header>
@@ -534,6 +566,7 @@
         <span id="coinVal">0</span>
       </div>
       <button class="shop-btn" id="shopBtn" title="Shop">🛒</button>
+      <button class="friends-btn" id="friendsBtn" title="Friends">👥<span class="notif-badge hidden" id="friendNotif">0</span></button>
       <button class="theme-btn" id="themeBtn" title="Toggle theme">🌙</button>
       <div class="user-chip" id="userChip">
         <div class="avatar" id="userAvatar" data-frame="">
@@ -608,12 +641,13 @@
   </div>
 </div>
 
-<div class="modal" id="nameModal">
+<div class="modal hidden" id="nameModal">
   <div class="modal-box">
     <div class="emoji-big">⚡</div>
     <h2>Welcome to Word Strike</h2>
     <p>Enter your name to begin</p>
-    <input type="text" id="nameInput" maxlength="14" placeholder="Your name (English letters)" autocomplete="off"/>
+    <input type="text" id="nameInput" maxlength="14" placeholder="Your name (letters, numbers, _)" autocomplete="off"/>
+    <div class="feedback" id="nameFeedback"></div>
     <button class="primary" id="nameNextBtn">Continue →</button>
   </div>
 </div>
@@ -652,6 +686,29 @@
     <div class="cat-stats-list" id="pCatStats"></div>
 
     <button class="primary" id="closeProfileBtn" style="width:100%;margin-top:8px">Close</button>
+  </div>
+</div>
+
+<div class="modal hidden" id="friendsModal">
+  <div class="modal-box" style="text-align:left">
+    <div class="emoji-big" style="text-align:center">👥</div>
+    <h2 style="text-align:center">Friends</h2>
+    <p style="text-align:center;margin-bottom:18px">Add friends and challenge them</p>
+
+    <div class="add-friend-row">
+      <input type="text" id="friendNameInput" maxlength="20" placeholder="Friend's username" autocomplete="off"/>
+      <button id="addFriendBtn">➕ Add</button>
+    </div>
+    <div class="feedback" id="friendFeedback"></div>
+
+    <div class="friends-tabs">
+      <button class="friends-tab active" data-ftab="friends">👫 My Friends</button>
+      <button class="friends-tab" data-ftab="requests">📨 Requests <span id="reqCount"></span></button>
+    </div>
+
+    <div class="friends-list" id="friendsList"></div>
+
+    <button class="ghost" id="closeFriendsBtn" style="width:100%;margin-top:8px;color:var(--txt)">Close</button>
   </div>
 </div>
 
@@ -707,7 +764,18 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const SUPABASE_URL = 'https://zmnhvrecgsmaxsfwemhk.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_XslIAvmiwQxAHF3xQnKXDw_NSnTO_8E';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let onlineUsers = new Set();
+let presenceChannel = null;
+let leaderboardChannel = null;
+let friendsChannel = null;
+
 const WORDS = {
   3: ["CAT","DOG","SUN","RUN","BIG","RED","TOP","FLY","JOY","KEY","ICE","SKY","ARM","BED","CUP","EGG","FOX","GAP","HAT","INK","JAM","KIT","LOG","MAP","NET","OAK","PIG","RAT","SEA","TEA","VAN","WAX","YES","ZOO","BAT","COW","DEW","ELF","FAN","GUM","HUG","IVY","JAR","LAB","MUD","NAP","OWL","PEN","RUG","AIR","BAG","CAP","DIG","EAR","FIT","GAS","HEN","JOB","KID","LID","MAN","NEW","OIL","POT","RIB","SIP","TIP","URN","VET","WEB","YAK","ZAP","ANT","BOY","CRY","DAY","EYE","FUR","GYM","HOP","ILL","JOG","KEG","LAW","MIX","NOD","ODD","PAW","RAW","SAW","TAG","USE","VOW","WAR","YAM","ZIG"],
   4: ["FISH","BIRD","TREE","MOON","STAR","GAME","FIRE","WIND","BOOK","DOOR","RING","GOLD","KING","LOVE","HOPE","TIME","LIFE","ROAD","BLUE","SNOW","RAIN","WOLF","LION","BEAR","DUCK","FROG","CAKE","MILK","RICE","BALL","BELL","DRUM","FLAG","GATE","HALL","IRON","JUMP","KITE","LAMP","MASK","NEST","OPEN","PARK","QUIZ","ROCK","SHIP","TENT","UNIT","VASE","BANK","CARD","DESK","EDGE","FACE","GIRL","HAND","IDEA","JOKE","KICK","LEAF","MIND","NOSE","OVEN","PAGE","RAIL","SALT","TASK","USER","VIEW","WALL","YARD","ZONE","ARMY","BOAT","CLUB","DRAG","EARN","FARM","GOLF","HEAT","ISLE","JOIN","KNOW","LOCK","MOOD","NAVY","ONLY","POOL","RUSH","SOAP","TIDE","URGE","VAST","WING"],
@@ -808,7 +876,6 @@ let game = {
 };
 
 let leaderboard = [];
-let botTimer = null;
 let timedState = null;
 let astroTimer = null;
 let astroGlowTimer = null;
@@ -867,30 +934,142 @@ const SFX = {
     setTimeout(()=>playTone(1100,.06,"sine",.05),60);
   },
   tickWarn(){ playTone(1600,.06,"square",.09); },
-  tickDanger(){ playTone(1800,.07,"square",.11); setTimeout(()=>playTone(1200,.08,"square",.08),70); }
+  tickDanger(){ playTone(1800,.07,"square",.11); setTimeout(()=>playTone(1200,.08,"square",.08),70); },
+  notify(){ playTone(880,.08,"sine",.07); setTimeout(()=>playTone(1175,.12,"sine",.07),90); }
 };
 
-function safeGet(key){ try{ return localStorage.getItem(key); }catch(e){ return null; } }
-function safeSet(key,value){ try{ localStorage.setItem(key,value); }catch(e){} }
-
-function loadPlayer(){
-  const s = safeGet("ws_player");
-  if(!s) return null;
-  try{
-    const p = JSON.parse(s);
-    return {
-      ...state,
-      ...p,
-      catWins:{...state.catWins, ...(p.catWins||{})},
-      unlockedBadges: Array.isArray(p.unlockedBadges) ? p.unlockedBadges : [],
-      ownedMultipliers: Array.isArray(p.ownedMultipliers) ? p.ownedMultipliers : [],
-      ownedFrames: Array.isArray(p.ownedFrames) ? p.ownedFrames : [],
-      activeMultiplier: p.activeMultiplier || null,
-      activeFrame: p.activeFrame || null
-    };
-  }catch(e){ return null; }
+function validateUsername(name){
+  if(!name || name.length < 3){
+    return { ok:false, msg:"Name must be at least 3 characters" };
+  }
+  if(name.length > 14){
+    return { ok:false, msg:"Name must be at most 14 characters" };
+  }
+  if(!/^[A-Za-z][A-Za-z0-9_]*$/.test(name)){
+    return { ok:false, msg:"Only letters, numbers, and _ (must start with a letter)" };
+  }
+  return { ok:true };
 }
-function savePlayer(){ safeSet("ws_player", JSON.stringify(state)); }
+
+async function initAuth(){
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if(session && session.user){
+    currentUser = session.user;
+    const loaded = await loadPlayerFromCloud();
+    if(loaded){
+      setupUIForPlayer();
+      return;
+    }
+  }
+  document.getElementById("nameModal").classList.remove("hidden");
+  setTimeout(() => document.getElementById("nameInput")?.focus(), 300);
+}
+
+async function loadPlayerFromCloud(){
+  if(!currentUser) return false;
+  const { data, error } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq("id", currentUser.id)
+    .maybeSingle();
+  if(error || !data) return false;
+  state.name = data.username || "";
+  state.avatar = data.avatar || DEFAULT_AVATAR;
+  state.score = data.score || 0;
+  state.wins = data.wins || 0;
+  state.bestStreak = data.best_streak || 0;
+  state.coins = data.coins || 0;
+  state.perfectWins = data.perfect_wins || 0;
+  state.timedBest = data.timed_best || 0;
+  state.catWins = data.cat_wins || {3:0,4:0,5:0,6:0,random:0,timed:0,friend:0};
+  state.unlockedBadges = data.badges || [];
+  state.activeFrame = data.active_frame || null;
+  state.ownedFrames = data.owned_frames || [];
+  state.ownedMultipliers = data.owned_multipliers || [];
+  state.hasPlayed = true;
+  return true;
+}
+
+async function createProfile(username, avatar){
+  const v = validateUsername(username);
+  if(!v.ok){
+    return { ok:false, msg:v.msg };
+  }
+
+  const { data: existing } = await supabaseClient
+    .from("profiles")
+    .select("id")
+    .ilike("username", username)
+    .maybeSingle();
+  if(existing){
+    return { ok:false, msg:"This name is already taken. Pick another one." };
+  }
+
+  const { data: authData, error: authError } = await supabaseClient.auth.signInAnonymously();
+  if(authError){
+    console.error("Auth error:", authError);
+    return { ok:false, msg:authError.message };
+  }
+  currentUser = authData.user;
+
+  const { error: profileError } = await supabaseClient
+    .from("profiles")
+    .insert({
+      id: currentUser.id,
+      username: username,
+      avatar: avatar,
+      score: 0,
+      wins: 0,
+      coins: 0,
+      best_streak: 0
+    });
+
+  if(profileError){
+    console.error("Profile error:", profileError);
+    return { ok:false, msg:profileError.message };
+  }
+
+  state.name = username;
+  state.avatar = avatar;
+  state.hasPlayed = true;
+  return { ok:true };
+}
+
+async function savePlayerToCloud(){
+  if(!currentUser) return;
+  await supabaseClient
+    .from("profiles")
+    .update({
+      username: state.name,
+      avatar: state.avatar,
+      score: state.score,
+      wins: state.wins,
+      coins: state.coins,
+      best_streak: state.bestStreak,
+      perfect_wins: state.perfectWins,
+      timed_best: state.timedBest,
+      cat_wins: state.catWins,
+      badges: state.unlockedBadges,
+      active_frame: state.activeFrame,
+      owned_frames: state.ownedFrames,
+      owned_multipliers: state.ownedMultipliers,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", currentUser.id);
+}
+
+function setupUIForPlayer(){
+  document.getElementById("userName").textContent = state.name;
+  document.getElementById("userAvatarEmoji").textContent = state.avatar;
+  document.getElementById("nameModal").classList.add("hidden");
+  applyTheme(state.theme || "night");
+  updateCoinDisplay(false);
+  updateAvatarFrame();
+  renderCategories();
+  initPresence();
+  loadLeaderboardRealtime();
+  startMultTimerUI();
+}
 
 function applyTheme(theme){
   state.theme = theme;
@@ -901,7 +1080,6 @@ function applyTheme(theme){
     document.documentElement.classList.remove("day");
     document.getElementById("themeBtn").textContent = "🌙";
   }
-  savePlayer();
 }
 function toggleTheme(){ applyTheme(state.theme === "day" ? "night" : "day"); }
 
@@ -926,7 +1104,7 @@ function addCoins(amount){
   if(amount <= 0) return 0;
   const boosted = applyMultiplier(amount);
   state.coins += boosted;
-  savePlayer();
+  savePlayerToCloud();
   updateCoinDisplay(true);
   SFX.coin();
   return boosted;
@@ -935,8 +1113,6 @@ function addCoins(amount){
 function checkMultiplierExpiry(){
   if(state.activeMultiplier && state.activeMultiplier.expiresAt <= Date.now()){
     state.activeMultiplier = null;
-    savePlayer();
-    renderActiveMultiplierBadge();
   }
 }
 function renderActiveMultiplierBadge(){
@@ -1178,134 +1354,56 @@ function initStars(){
   requestAnimationFrame(draw);
 }
 
-const FIRST = ["Ahmed","Mohammed","Sara","Fatima","Omar","Layla","Yousef","Noura","Khalid","Mariam","Faisal","Hessa","Abdullah","Reem","Saad","Dana","Tariq","Jana","Rakan","Lina","Bader","Aisha","Nasser","Maha","Sultan","Rana","Turki","Shatha","Majed","Amal","Waleed","Hind","Ziyad","Ghada","Fahad","Nada","Salem","Abeer","Mansour","Wafa","Rami","Hala","Yasser","Samar","Adel","Rawan","Nawaf","Basma","Saud","Dalia","Ibrahim","Mona","Hamad","Eman","Faris","Asma","Raed","Sahar","Talal","Lubna","Anas","Najla","Zaid","Hanan","Ammar","Suha","Eyad","Iman","Laith","Ruba","Moath","Yara","Osama","Dima","Amer","Shahad","Kareem","Noor","Sami","Raghad","Jaber","Aseel","Muath","Wijdan","Hazem","Layan","Tamer","Razan","Ayman","Joud","Bilal","Malak","Wisam","Tala","Nabil","Raneem","Hisham","Sama","Qusai","Renad"];
-const LAST = ["_1","_7","_x","_99","_pro","_yt","_22","_88","_v","_07","_55","_3","_00","_gg","_xp","_44","_11","_zz","_66","_0","_9","_5","_2","_8","_4","_6","_13","_21","_77","_33"];
-const AV = ["🦖","🐰","🦊","🐼","🐯","🦁","🐸","🐵","🐨","🐷","🦉","🐺","🐱","🐶","🦄","🐙","🐢","🐧","🦋","🦅","🦈","🐬","🦜","🐝","🦩"];
-
-function randScore(){
-  const r = Math.random();
-  if(r < .45) return Math.floor(Math.random()*80)+15;
-  if(r < .75) return Math.floor(Math.random()*200)+80;
-  if(r < .92) return Math.floor(Math.random()*350)+280;
-  if(r < .98) return Math.floor(Math.random()*550)+630;
-  return Math.floor(Math.random()*800)+1180;
+function loadLeaderboardRealtime(){
+  loadLeaderboard();
+  if(leaderboardChannel) supabaseClient.removeChannel(leaderboardChannel);
+  leaderboardChannel = supabaseClient
+    .channel("leaderboard-changes")
+    .on("postgres_changes",
+      { event: "*", schema: "public", table: "profiles" },
+      () => loadLeaderboard()
+    )
+    .subscribe();
 }
 
-function randStat(score){
-  const wins = Math.floor(score / (8 + Math.random()*12)) + Math.floor(Math.random()*5);
-  const bestStreak = Math.min(wins, Math.floor(Math.random()*8)+2);
-  const perfectWins = Math.floor(wins * (Math.random()*0.3));
-  const timedBest = Math.floor(Math.random()*15)+3;
-  const catWins = {
-    3: Math.floor(Math.random()*wins*0.4),
-    4: Math.floor(Math.random()*wins*0.35),
-    5: Math.floor(Math.random()*wins*0.25),
-    6: Math.floor(Math.random()*wins*0.15),
-    timed: Math.floor(Math.random()*wins*0.2),
-    friend: Math.floor(Math.random()*wins*0.15),
-    random: Math.floor(Math.random()*wins*0.2)
-  };
-  return {wins, bestStreak, perfectWins, timedBest, catWins};
+async function loadLeaderboard(){
+  const { data, error } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .order("score", { ascending: false })
+    .limit(100);
+  if(error){ console.error("Leaderboard error:", error); return; }
+  leaderboard = (data || []).map(p => ({
+    id: p.id,
+    name: p.username,
+    score: p.score,
+    avatar: p.avatar,
+    isMe: currentUser && p.id === currentUser.id,
+    isBot: false,
+    wins: p.wins || 0,
+    bestStreak: p.best_streak || 0,
+    perfectWins: p.perfect_wins || 0,
+    timedBest: p.timed_best || 0,
+    catWins: p.cat_wins || {},
+    badges: p.badges || [],
+    frame: p.active_frame,
+    lastSeen: p.updated_at ? new Date(p.updated_at).getTime() : Date.now()
+  }));
+  renderLeaderboard();
 }
 
-function generateBadgesFor(stats){
-  const ids = [];
-  BADGES.forEach(b => {
-    if(b.check({
-      wins: stats.wins,
-      bestStreak: stats.bestStreak,
-      score: stats.score || 0,
-      perfectWins: stats.perfectWins,
-      timedBest: stats.timedBest,
-      catWins: stats.catWins
-    })) ids.push(b.id);
-  });
-  return ids;
-}
-
-function generateLeaderboard(){
-  const saved = safeGet("ws_leaderboard_v2");
-  if(saved){
-    try{
-      const parsed = JSON.parse(saved);
-      if(Array.isArray(parsed) && parsed.length >= 100){
-        leaderboard = parsed;
-        return;
-      }
-    }catch(e){}
-  }
-  const used = new Set();
-  leaderboard = [];
-  for(let i=0; i<250; i++){
-    let name, attempts = 0;
-    do {
-      name = FIRST[Math.floor(Math.random()*FIRST.length)] +
-             (Math.random() < .7 ? LAST[Math.floor(Math.random()*LAST.length)] : "");
-      attempts++;
-    } while(used.has(name) && attempts < 30);
-    if(used.has(name)) name = name + i;
-    used.add(name);
-    const score = randScore();
-    const stats = randStat(score);
-    stats.score = score;
-    leaderboard.push({
-      name: name,
-      score: score,
-      avatar: AV[Math.floor(Math.random()*AV.length)],
-      isMe: false,
-      isBot: true,
-      wins: stats.wins,
-      bestStreak: stats.bestStreak,
-      perfectWins: stats.perfectWins,
-      timedBest: stats.timedBest,
-      catWins: stats.catWins,
-      badges: generateBadgesFor(stats),
-      lastSeen: Date.now() - Math.floor(Math.random()*7*24*60*60*1000)
-    });
-  }
-  saveLeaderboard();
-}
-function saveLeaderboard(){ safeSet("ws_leaderboard_v2", JSON.stringify(leaderboard)); }
-function ensureMeInLeaderboard(){
-  if(!state.hasPlayed) return;
-  const existing = leaderboard.find(p => p.isMe);
-  if(existing){
-    existing.name = state.name;
-    existing.avatar = state.avatar;
-    existing.score = state.score;
-    existing.wins = state.wins;
-    existing.bestStreak = state.bestStreak;
-    existing.perfectWins = state.perfectWins;
-    existing.timedBest = state.timedBest;
-    existing.catWins = state.catWins;
-    existing.badges = state.unlockedBadges;
-  } else {
-    leaderboard.push({
-      name: state.name, score: state.score, avatar: state.avatar,
-      isMe: true, isBot: false,
-      wins: state.wins, bestStreak: state.bestStreak,
-      perfectWins: state.perfectWins, timedBest: state.timedBest,
-      catWins: state.catWins, badges: state.unlockedBadges
-    });
-  }
-}
 function sortLeaderboard(){ leaderboard.sort((a,b) => b.score - a.score); }
 function getMyRank(){
-  if(!state.hasPlayed) return null;
-  const me = leaderboard.find(p => p.isMe);
-  if(!me) return null;
-  return leaderboard.indexOf(me) + 1;
+  if(!currentUser) return null;
+  const idx = leaderboard.findIndex(p => p.isMe);
+  return idx === -1 ? null : idx + 1;
 }
-function escapeName(str){
-  if(window.CSS && CSS.escape) return CSS.escape(str);
-  return str.replace(/[^a-zA-Z0-9_-]/g, "\\$&");
-}
+
 function renderLeaderboard(){
-  sortLeaderboard();
   const list = document.getElementById("lbList");
   if(!list) return;
   list.innerHTML = "";
-  const me = state.hasPlayed ? leaderboard.find(p => p.isMe) : null;
+  const me = leaderboard.find(p => p.isMe);
   const top = leaderboard.slice(0, 12);
   let rows = top.slice();
   if(me){
@@ -1316,7 +1414,7 @@ function renderLeaderboard(){
       const end = Math.min(leaderboard.length, myIdx+3);
       for(let i=start; i<end; i++){
         const n = leaderboard[i];
-        if(!rows.find(r => r.name === n.name && !r.separator)) rows.push(n);
+        if(!rows.find(r => r.id === n.id)) rows.push(n);
       }
     }
   }
@@ -1333,14 +1431,13 @@ function renderLeaderboard(){
     const rankClass = idx === 0 ? "gold" : idx === 1 ? "silver" : idx === 2 ? "bronze" : "";
     const div = document.createElement("div");
     div.className = "lb-item" + (item.isMe ? " me" : "");
-    div.dataset.name = item.name;
     div.innerHTML = `
       <div class="rank ${rankClass}">#${idx+1}</div>
       <div class="lb-avatar">${item.avatar || DEFAULT_AVATAR}</div>
       <div class="lb-name">${item.name}${item.isMe ? " (You)" : ""}</div>
       <div class="lb-pts">${item.score}</div>
     `;
-    div.onclick = () => openBotProfile(item);
+    div.onclick = () => openPlayerProfile(item);
     list.appendChild(div);
   });
   const rankEl = document.getElementById("myRank");
@@ -1355,41 +1452,10 @@ function renderLeaderboard(){
     }
   }
 }
-function updateLeaderboardScore(){
-  state.hasPlayed = true;
-  ensureMeInLeaderboard();
-  const me = leaderboard.find(p => p.isMe);
-  if(!me) return;
-  me.score = state.score;
-  me.name = state.name;
-  me.avatar = state.avatar;
-  me.wins = state.wins;
-  me.bestStreak = state.bestStreak;
-  me.perfectWins = state.perfectWins;
-  me.timedBest = state.timedBest;
-  me.catWins = state.catWins;
-  me.badges = state.unlockedBadges;
-  sortLeaderboard();
-  renderLeaderboard();
-  const row = document.querySelector(`.lb-item[data-name="${escapeName(state.name)}"]`);
-  if(row){
-    row.classList.add("flash");
-    setTimeout(() => row.classList.remove("flash"), 800);
-  }
-  saveLeaderboard();
-  savePlayer();
-}
-function botActivity(){
-  if(botTimer) clearInterval(botTimer);
-  botTimer = setInterval(() => {
-    const bots = leaderboard.filter(p => p.isBot);
-    if(!bots.length) return;
-    const bot = bots[Math.floor(Math.random()*bots.length)];
-    if(bot) bot.score += Math.floor(Math.random()*3) + 1;
-    sortLeaderboard();
-    renderLeaderboard();
-    saveLeaderboard();
-  }, 15000);
+
+async function updateLeaderboardScore(){
+  await savePlayerToCloud();
+  await loadLeaderboard();
 }
 
 function renderCategories(){
@@ -1535,7 +1601,7 @@ function renderHostSetup(body){
   };
 }
 
-function createSession(){
+async function createSession(){
   const words = buildWordList(sessionSetup.challengeType, sessionSetup.rounds);
   game.friendWords = words;
   game.friendRoundIdx = 0;
@@ -1747,7 +1813,6 @@ function showFinalCompare(){
   else if(winner === "op"){ SFX.lose(); }
   document.getElementById("finalDoneBtn").onclick = () => {
     modal.classList.add("hidden");
-    window.history.replaceState({}, "", window.location.pathname);
     backToCats();
   };
 }
@@ -1919,7 +1984,7 @@ function submitTimedGuess(){
     }
     state.catWins["timed"] = (state.catWins["timed"]||0) + 1;
     timedState.coinsEarned += coins;
-    savePlayer();
+    savePlayerToCloud();
     animateScore(state.score);
     document.getElementById("streakVal").textContent = state.streak;
     updateLeaderboardScore();
@@ -1941,7 +2006,7 @@ function endTimedGame(){
   const coinsEarned = timedState.coinsEarned;
   if(wordsSolved > (state.timedBest||0)){ state.timedBest = wordsSolved; }
   const newBadges = checkBadges();
-  savePlayer();
+  savePlayerToCloud();
   document.getElementById("guessInput").disabled = true;
   document.getElementById("guessBtn").disabled = true;
   document.getElementById("timerBar").classList.remove("active");
@@ -2118,7 +2183,7 @@ function submitGuess(){
     const catKey = cat.random ? "random" : cat.id;
     state.catWins[catKey] = (state.catWins[catKey]||0) + 1;
     const newBadges = checkBadges();
-    savePlayer();
+    savePlayerToCloud();
     animateScore(state.score);
     document.getElementById("streakVal").textContent = state.streak;
     updateLeaderboardScore();
@@ -2140,7 +2205,7 @@ function submitGuess(){
       <div class="win">
         <h3>🎉 +${pts} Points!</h3>
         <p>Word: <b>${game.target}</b> — solved in ${game.tries.length} ${game.tries.length===1?"try":"tries"}</p>
-        <p>Rank: <b>#${rank}</b> — Total: <b>${state.score}</b> pts</p>
+        <p>Rank: <b>#${rank || "—"}</b> — Total: <b>${state.score}</b> pts</p>
         <div class="coin-reward">🪙 +${finalCoins} coins earned</div>
         ${streakNote}
         ${badgesHtml}
@@ -2238,41 +2303,11 @@ function openProfile(){
   document.getElementById("pScore").textContent = state.score;
   document.getElementById("pWins").textContent = state.wins;
   document.getElementById("pStreak").textContent = state.bestStreak;
-  const bg = document.getElementById("pBadges");
-  bg.innerHTML = "";
-  BADGES.forEach(b => {
-    const unlocked = state.unlockedBadges.includes(b.id);
-    const div = document.createElement("div");
-    div.className = "badge " + (unlocked ? "unlocked" : "locked");
-    div.title = b.desc;
-    div.innerHTML = `<span class="icon">${b.icon}</span><div class="name">${b.name}</div>`;
-    bg.appendChild(div);
-  });
-  const cs = document.getElementById("pCatStats");
-  cs.innerHTML = "";
-  const catLabels = {
-    3: "🟢 Easy Words",
-    4: "🟡 Medium Words",
-    5: "🟠 Hard Words",
-    6: "🔴 Expert Words",
-    timed: "⏱️ Time Attack",
-    friend: "🤝 Friend Challenge",
-    random: "🎲 Random Challenge"
-  };
-  Object.keys(catLabels).forEach(k => {
-    const wins = state.catWins[k] || 0;
-    const row = document.createElement("div");
-    row.className = "cat-stat-row";
-    row.innerHTML = `
-      <span>${catLabels[k]}</span>
-      <span class="wins-count">${wins} ${wins === 1 ? "win" : "wins"}</span>
-    `;
-    cs.appendChild(row);
-  });
+  renderBadgesAndCats(state.unlockedBadges, state.catWins);
   document.getElementById("profileModal").classList.remove("hidden");
 }
 
-function openBotProfile(player){
+function openPlayerProfile(player){
   if(player.isMe){ openProfile(); return; }
   document.getElementById("changeAvatarBtn").style.display = "none";
   document.getElementById("pAvatar").textContent = player.avatar || DEFAULT_AVATAR;
@@ -2281,18 +2316,22 @@ function openBotProfile(player){
   document.getElementById("pScore").textContent = player.score;
   document.getElementById("pWins").textContent = player.wins || 0;
   document.getElementById("pStreak").textContent = player.bestStreak || 0;
+  document.getElementById("pRank").textContent = "Rank #" + rank + (onlineUsers.has(player.id) ? " · 🟢 Online" : "");
+  renderBadgesAndCats(player.badges || [], player.catWins || {});
+  document.getElementById("profileModal").classList.remove("hidden");
+}
 
+function renderBadgesAndCats(badges, catWins){
   const bg = document.getElementById("pBadges");
   bg.innerHTML = "";
   BADGES.forEach(b => {
-    const unlocked = (player.badges || []).includes(b.id);
+    const unlocked = (badges || []).includes(b.id);
     const div = document.createElement("div");
     div.className = "badge " + (unlocked ? "unlocked" : "locked");
     div.title = b.desc;
     div.innerHTML = `<span class="icon">${b.icon}</span><div class="name">${b.name}</div>`;
     bg.appendChild(div);
   });
-
   const cs = document.getElementById("pCatStats");
   cs.innerHTML = "";
   const catLabels = {
@@ -2301,24 +2340,237 @@ function openBotProfile(player){
     friend: "🤝 Friend Challenge", random: "🎲 Random Challenge"
   };
   Object.keys(catLabels).forEach(k => {
-    const wins = (player.catWins && player.catWins[k]) || 0;
+    const wins = (catWins && catWins[k]) || 0;
     const row = document.createElement("div");
     row.className = "cat-stat-row";
     row.innerHTML = `<span>${catLabels[k]}</span><span class="wins-count">${wins} ${wins===1?"win":"wins"}</span>`;
     cs.appendChild(row);
   });
+}
 
-  const lastSeenEl = document.getElementById("pRank");
-  const diff = Date.now() - (player.lastSeen || Date.now());
-  const mins = Math.floor(diff/60000);
-  let seenText = "";
-  if(mins < 1) seenText = " · Online now";
-  else if(mins < 60) seenText = ` · ${mins}m ago`;
-  else if(mins < 1440) seenText = ` · ${Math.floor(mins/60)}h ago`;
-  else seenText = ` · ${Math.floor(mins/1440)}d ago`;
-  lastSeenEl.textContent = "Rank #" + rank + seenText;
+function initPresence(){
+  if(presenceChannel) supabaseClient.removeChannel(presenceChannel);
+  presenceChannel = supabaseClient.channel("online-users", {
+    config: { presence: { key: currentUser.id } }
+  });
+  presenceChannel
+    .on("presence", { event: "sync" }, () => {
+      const st = presenceChannel.presenceState();
+      onlineUsers = new Set(Object.keys(st));
+      if(!document.getElementById("friendsModal").classList.contains("hidden")){
+        loadFriendsUI();
+      }
+    })
+    .subscribe(async (status) => {
+      if(status === "SUBSCRIBED"){
+        await presenceChannel.track({
+          user_id: currentUser.id,
+          username: state.name,
+          online_at: new Date().toISOString()
+        });
+      }
+    });
+}
 
-  document.getElementById("profileModal").classList.remove("hidden");
+function openFriendsModal(){
+  document.getElementById("friendsModal").classList.remove("hidden");
+  document.getElementById("friendFeedback").className = "feedback";
+  loadFriendsUI();
+  listenFriendRequests();
+}
+
+let friendsListenerChannel = null;
+function listenFriendRequests(){
+  if(friendsListenerChannel) supabaseClient.removeChannel(friendsListenerChannel);
+  friendsListenerChannel = supabaseClient
+    .channel("friend-requests-" + currentUser.id)
+    .on("postgres_changes",
+      { event: "*", schema: "public", table: "friendships", filter: `addressee_id=eq.${currentUser.id}` },
+      () => { loadFriendsUI(); showFriendNotif(); }
+    )
+    .subscribe();
+}
+
+async function loadFriendsUI(){
+  const listEl = document.getElementById("friendsList");
+  if(!listEl) return;
+  const activeTab = document.querySelector(".friends-tab.active")?.dataset.ftab || "friends";
+  listEl.innerHTML = '<div style="text-align:center;color:var(--muted);padding:14px;font-size:13px">Loading...</div>';
+
+  const { data: friendships } = await supabaseClient
+    .from("friendships")
+    .select("*")
+    .or(`requester_id.eq.${currentUser.id},addressee_id.eq.${currentUser.id}`);
+
+  if(!friendships){ listEl.innerHTML = ""; return; }
+
+  const accepted = friendships.filter(f => f.status === "accepted");
+  const pending = friendships.filter(f => f.status === "pending" && f.addressee_id === currentUser.id);
+  const sent = friendships.filter(f => f.status === "pending" && f.requester_id === currentUser.id);
+
+  const reqCount = document.getElementById("reqCount");
+  reqCount.textContent = pending.length > 0 ? `(${pending.length})` : "";
+  const notif = document.getElementById("friendNotif");
+  if(pending.length > 0){ notif.textContent = pending.length; notif.classList.remove("hidden"); }
+  else { notif.classList.add("hidden"); }
+
+  if(activeTab === "friends"){
+    if(accepted.length === 0){
+      listEl.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">No friends yet. Add someone by username above!</div>';
+      return;
+    }
+    const ids = accepted.map(f => f.requester_id === currentUser.id ? f.addressee_id : f.requester_id);
+    const { data: profiles } = await supabaseClient
+      .from("profiles")
+      .select("*")
+      .in("id", ids);
+    listEl.innerHTML = "";
+    (profiles || []).forEach(p => {
+      const isOnline = onlineUsers.has(p.id);
+      const div = document.createElement("div");
+      div.className = "friend-item" + (isOnline ? " online" : "");
+      div.innerHTML = `
+        <div class="friend-avatar">${p.avatar || DEFAULT_AVATAR}</div>
+        <div class="friend-info">
+          <div class="friend-name"><span class="online-dot ${isOnline?'':'offline'}"></span>${p.username}</div>
+          <div class="friend-status">Score: ${p.score} · ${isOnline ? "Online" : "Offline"}</div>
+        </div>
+        <button class="friend-action" data-challenge="${p.id}">Challenge</button>
+      `;
+      div.querySelector(".friend-action").onclick = (e) => {
+        e.stopPropagation();
+        challengeFriend(p);
+      };
+      listEl.appendChild(div);
+    });
+  } else {
+    if(pending.length === 0 && sent.length === 0){
+      listEl.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">No requests.</div>';
+      return;
+    }
+    const allIds = [...pending.map(f => f.requester_id), ...sent.map(f => f.addressee_id)];
+    const { data: profiles } = await supabaseClient
+      .from("profiles")
+      .select("*")
+      .in("id", allIds);
+    const profileMap = {};
+    (profiles || []).forEach(p => profileMap[p.id] = p);
+    listEl.innerHTML = "";
+    pending.forEach(f => {
+      const p = profileMap[f.requester_id];
+      if(!p) return;
+      const div = document.createElement("div");
+      div.className = "friend-item";
+      div.innerHTML = `
+        <div class="friend-avatar">${p.avatar || DEFAULT_AVATAR}</div>
+        <div class="friend-info">
+          <div class="friend-name">${p.username}</div>
+          <div class="friend-status">wants to be your friend</div>
+        </div>
+        <button class="friend-action" data-accept="${f.id}" style="background:linear-gradient(135deg,#22c55e,#10b981)">Accept</button>
+        <button class="friend-action" data-reject="${f.id}" style="background:linear-gradient(135deg,#ef4444,#dc2626)">✕</button>
+      `;
+      div.querySelector(`[data-accept]`).onclick = () => respondFriendRequest(f.id, "accepted");
+      div.querySelector(`[data-reject]`).onclick = () => respondFriendRequest(f.id, "rejected");
+      listEl.appendChild(div);
+    });
+    sent.forEach(f => {
+      const p = profileMap[f.addressee_id];
+      if(!p) return;
+      const div = document.createElement("div");
+      div.className = "friend-item";
+      div.style.opacity = ".7";
+      div.innerHTML = `
+        <div class="friend-avatar">${p.avatar || DEFAULT_AVATAR}</div>
+        <div class="friend-info">
+          <div class="friend-name">${p.username}</div>
+          <div class="friend-status">Request sent · pending</div>
+        </div>
+        <button class="friend-action" data-cancel="${f.id}" style="background:rgba(239,68,68,.2);color:#fca5a5">Cancel</button>
+      `;
+      div.querySelector(`[data-cancel]`).onclick = async () => {
+        await supabaseClient.from("friendships").delete().eq("id", f.id);
+        loadFriendsUI();
+      };
+      listEl.appendChild(div);
+    });
+  }
+}
+
+async function addFriend(){
+  const input = document.getElementById("friendNameInput");
+  const name = input.value.trim();
+  const fb = document.getElementById("friendFeedback");
+  if(!name){
+    fb.textContent = "⚠️ Enter a username";
+    fb.className = "feedback show warn";
+    SFX.error();
+    return;
+  }
+  if(name.toLowerCase() === state.name.toLowerCase()){
+    fb.textContent = "⚠️ You can't add yourself";
+    fb.className = "feedback show warn";
+    SFX.error();
+    return;
+  }
+  const { data: profile, error } = await supabaseClient
+    .from("profiles")
+    .select("id,username")
+    .ilike("username", name)
+    .maybeSingle();
+  if(error || !profile){
+    fb.textContent = "❌ Player not found";
+    fb.className = "feedback show err";
+    SFX.error();
+    return;
+  }
+  const { data: existing } = await supabaseClient
+    .from("friendships")
+    .select("*")
+    .or(`and(requester_id.eq.${currentUser.id},addressee_id.eq.${profile.id}),and(requester_id.eq.${profile.id},addressee_id.eq.${currentUser.id})`)
+    .maybeSingle();
+  if(existing){
+    fb.textContent = existing.status === "accepted" ? "ℹ️ Already friends" : "ℹ️ Request already exists";
+    fb.className = "feedback show warn";
+    return;
+  }
+  const { error: insErr } = await supabaseClient
+    .from("friendships")
+    .insert({ requester_id: currentUser.id, addressee_id: profile.id, status: "pending" });
+  if(insErr){
+    fb.textContent = "❌ Could not send request";
+    fb.className = "feedback show err";
+    return;
+  }
+  input.value = "";
+  fb.textContent = "✅ Friend request sent!";
+  fb.className = "feedback show ok";
+  SFX.notify();
+  loadFriendsUI();
+}
+
+async function respondFriendRequest(id, status){
+  if(status === "rejected"){
+    await supabaseClient.from("friendships").delete().eq("id", id);
+  } else {
+    await supabaseClient.from("friendships").update({ status: "accepted", updated_at: new Date().toISOString() }).eq("id", id);
+  }
+  SFX.notify();
+  loadFriendsUI();
+}
+
+async function challengeFriend(profile){
+  if(!onlineUsers.has(profile.id)){
+    alert(profile.username + " is offline right now. Challenge them anyway via a code!");
+    return;
+  }
+  openHostSetup();
+}
+
+function showFriendNotif(){
+  SFX.notify();
+  const notif = document.getElementById("friendNotif");
+  notif.classList.remove("hidden");
 }
 
 let tempName = "";
@@ -2394,7 +2646,7 @@ function renderShop(){
         const owned = state.ownedMultipliers.includes(id);
         if(owned){
           state.activeMultiplier = { id, value, expiresAt: Date.now() + minutes * 60 * 1000 };
-          savePlayer();
+          savePlayerToCloud();
           SFX.buy();
           renderActiveMultiplierBadge();
           renderShop();
@@ -2408,7 +2660,7 @@ function renderShop(){
           state.coins -= price;
           state.ownedMultipliers.push(id);
           state.activeMultiplier = { id, value, expiresAt: Date.now() + minutes * 60 * 1000 };
-          savePlayer();
+          savePlayerToCloud();
           updateCoinDisplay(true);
           SFX.buy();
           renderActiveMultiplierBadge();
@@ -2443,7 +2695,7 @@ function renderShop(){
         if(owned){
           if(state.activeFrame === id){ state.activeFrame = null; }
           else { state.activeFrame = id; }
-          savePlayer();
+          savePlayerToCloud();
           SFX.buy();
           updateAvatarFrame();
           renderShop();
@@ -2457,7 +2709,7 @@ function renderShop(){
           state.coins -= frame.price;
           state.ownedFrames.push(id);
           state.activeFrame = id;
-          savePlayer();
+          savePlayerToCloud();
           updateCoinDisplay(true);
           SFX.buy();
           updateAvatarFrame();
@@ -2484,6 +2736,22 @@ function bindEvents(){
   document.getElementById("userChip").onclick = openProfile;
   document.getElementById("themeBtn").onclick = toggleTheme;
   document.getElementById("shopBtn").onclick = openShop;
+  document.getElementById("friendsBtn").onclick = openFriendsModal;
+  document.getElementById("closeFriendsBtn").onclick = () => document.getElementById("friendsModal").classList.add("hidden");
+  document.getElementById("friendsModal").onclick = e => {
+    if(e.target.id === "friendsModal") e.currentTarget.classList.add("hidden");
+  };
+  document.getElementById("addFriendBtn").onclick = addFriend;
+  document.getElementById("friendNameInput").addEventListener("keypress", e => {
+    if(e.key === "Enter") addFriend();
+  });
+  document.querySelectorAll(".friends-tab").forEach(tab => {
+    tab.onclick = () => {
+      document.querySelectorAll(".friends-tab").forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      loadFriendsUI();
+    };
+  });
   document.getElementById("closeShopBtn").onclick = () => document.getElementById("shopModal").classList.add("hidden");
   document.querySelectorAll(".shop-tab").forEach(tab => {
     tab.onclick = () => {
@@ -2520,83 +2788,73 @@ function bindEvents(){
   });
   document.getElementById("nameNextBtn").onclick = () => {
     const n = document.getElementById("nameInput").value.trim();
-    if(n.length < 2 || !/^[A-Za-z]+$/.test(n)){
+    const v = validateUsername(n);
+    const fb = document.getElementById("nameFeedback");
+    if(!v.ok){
       document.getElementById("nameInput").style.borderColor = "var(--red)";
+      fb.textContent = "⚠️ " + v.msg;
+      fb.className = "feedback show err";
+      SFX.error();
       return;
     }
-    tempName = n.charAt(0).toUpperCase() + n.slice(1).toLowerCase();
+    document.getElementById("nameInput").style.borderColor = "var(--line)";
+    tempName = n;
     document.getElementById("nameModal").classList.add("hidden");
     openAvatarModal("setup");
   };
   document.getElementById("nameInput").addEventListener("keypress", e => {
     if(e.key === "Enter") document.getElementById("nameNextBtn").click();
   });
-  document.getElementById("avatarNextBtn").onclick = () => {
+  document.getElementById("nameInput").addEventListener("input", () => {
+    document.getElementById("nameInput").style.borderColor = "var(--line)";
+    const fb = document.getElementById("nameFeedback");
+    fb.className = "feedback";
+  });
+  document.getElementById("avatarNextBtn").onclick = async () => {
     if(!tempAvatar) return;
     if(avatarModalMode === "change"){
       state.avatar = tempAvatar;
-      savePlayer();
+      await savePlayerToCloud();
       document.getElementById("userAvatarEmoji").textContent = state.avatar;
       document.getElementById("pAvatar").textContent = state.avatar;
-      const me = leaderboard.find(p => p.isMe);
-      if(me) me.avatar = state.avatar;
-      sortLeaderboard();
-      renderLeaderboard();
-      saveLeaderboard();
+      await loadLeaderboard();
       document.getElementById("avatarModal").classList.add("hidden");
       return;
     }
-    state.name = tempName;
-    state.avatar = tempAvatar;
-    savePlayer();
+    const btn = document.getElementById("avatarNextBtn");
+    btn.disabled = true;
+    btn.textContent = "Creating...";
+    const result = await createProfile(tempName, tempAvatar);
+    btn.disabled = false;
+    btn.textContent = "Confirm 🚀";
+    if(!result.ok){
+      alert(result.msg || "Failed to create account");
+      return;
+    }
     document.getElementById("avatarModal").classList.add("hidden");
-    document.getElementById("userName").textContent = state.name;
-    document.getElementById("userAvatarEmoji").textContent = state.avatar;
-    renderCategories();
-    backToCats();
-    renderLeaderboard();
-    botActivity();
+    setupUIForPlayer();
   };
   document.getElementById("joinConfirmBtn").onclick = tryJoinSession;
   document.getElementById("joinCancelBtn").onclick = () => document.getElementById("joinModal").classList.add("hidden");
 }
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
   try{
     bindEvents();
     buildLogo();
     initStars();
-    generateLeaderboard();
-    const saved = loadPlayer();
-    if(saved && saved.name){
-      state = saved;
-      if(!state.avatar || state.avatar === "❓") state.avatar = DEFAULT_AVATAR;
-      if(typeof state.hasPlayed !== "boolean") state.hasPlayed = state.wins > 0;
-      if(!state.catWins.friend) state.catWins.friend = 0;
-      if(typeof state.coins !== "number") state.coins = 0;
-      if(!Array.isArray(state.ownedMultipliers)) state.ownedMultipliers = [];
-      if(!Array.isArray(state.ownedFrames)) state.ownedFrames = [];
-      applyTheme(state.theme || "night");
-      document.getElementById("userName").textContent = state.name;
-      document.getElementById("userAvatarEmoji").textContent = state.avatar;
-      document.getElementById("nameModal").classList.add("hidden");
-      if(state.hasPlayed){ ensureMeInLeaderboard(); }
-      renderCategories();
-      renderLeaderboard();
-      updateCoinDisplay(false);
-      updateAvatarFrame();
-      botActivity();
-      startMultTimerUI();
-    } else {
-      applyTheme("night");
-      updateCoinDisplay(false);
-      setTimeout(() => {
-        const ni = document.getElementById("nameInput");
-        if(ni) ni.focus();
-      }, 300);
-    }
     requestAnimationFrame(() => { initAstronaut(); });
-  }catch(err){ console.error("Boot error:", err); }
+    await initAuth();
+  }catch(err){
+    console.error("Boot error:", err);
+    document.getElementById("nameModal").classList.remove("hidden");
+  } finally {
+    const loader = document.getElementById("bootLoader");
+    if(loader){
+      loader.style.opacity = "0";
+      setTimeout(() => loader.remove(), 400);
+    }
+  }
 });
 document.addEventListener("click", () => { initAudio(); }, { once: true });
 </script>
