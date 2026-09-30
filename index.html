@@ -237,8 +237,8 @@
   html.day .modal{background:rgba(15,23,42,.55)}
   @keyframes fade{from{opacity:0}to{opacity:1}}
   .modal.hidden{display:none}
-  #profileModal{z-index:400}
-  #avatarModal{z-index:300}
+  #profileModal{z-index:100}
+  #avatarModal{z-index:500}
   #nameModal{z-index:200}
   #friendModal{z-index:250}
   #joinModal{z-index:260}
@@ -246,7 +246,7 @@
   #shopModal{z-index:280}
   #friendsModal{z-index:290}
   #inviteFriendModal{z-index:310}
-  #incomingInviteModal{z-index:320}
+  #directInviteWaitingModal{z-index:330}
   .modal-box{background:linear-gradient(180deg,var(--card-bg),var(--bg2));border:1px solid var(--line);border-radius:24px;padding:32px;max-width:520px;width:100%;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:up .4s cubic-bezier(.4,1.4,.6,1);max-height:90vh;overflow-y:auto;scrollbar-width:none;margin:auto;transition:background .4s ease, border-color .4s ease}
   .modal-box::-webkit-scrollbar{display:none}
   @keyframes up{from{transform:translateY(30px) scale(.95);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
@@ -298,8 +298,6 @@
   html.day .share-link{background:#f1f5f9}
   .share-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
   .share-actions button{padding:10px 16px;font-size:13px;flex:1;min-width:110px}
-  .friend-word-preview{background:linear-gradient(135deg,rgba(34,197,94,.15),rgba(20,184,166,.15));border:1px dashed rgba(34,197,94,.5);border-radius:12px;padding:12px;margin:12px 0;font-size:13px;color:#86efac}
-  html.day .friend-word-preview{color:#15803d}
   .mode-choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
   .mode-choice{background:var(--tile-bg);border:2px solid var(--line);border-radius:16px;padding:22px 14px;cursor:pointer;transition:background .3s ease, border-color .3s ease, transform .25s;text-align:center}
   .mode-choice:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 15px 35px rgba(99,102,241,.25)}
@@ -511,7 +509,7 @@
   .notif-badge.hidden{display:none}
   .friends-btn{width:42px;height:42px;border-radius:50%;background:var(--card-bg);border:1px solid var(--line);color:var(--txt);font-size:18px;cursor:pointer;display:grid;place-items:center;padding:0;transition:.25s;position:relative}
   .friends-btn:hover{transform:scale(1.08);border-color:var(--accent)}
-  #bootLoader{position:fixed;inset:0;z-index:500;background:radial-gradient(circle at 20% 0%, #1a2340 0%, #0b0f1a 55%, #05070f 100%);display:grid;place-items:center;transition:opacity .6s ease;overflow:hidden}
+  #bootLoader{position:fixed;inset:0;z-index:1000;background:radial-gradient(circle at 20% 0%, #1a2340 0%, #0b0f1a 55%, #05070f 100%);display:grid;place-items:center;transition:opacity .6s ease;overflow:hidden}
   .boot-stars{position:absolute;inset:0;overflow:hidden;pointer-events:none}
   .boot-star{position:absolute;width:3px;height:3px;background:white;border-radius:50%;box-shadow:0 0 8px white;animation:bootTwinkle 2s ease-in-out infinite}
   @keyframes bootTwinkle{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.3)}}
@@ -521,6 +519,17 @@
   #globalFriendNotif{position:fixed;top:20px;right:20px;z-index:450;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;padding:14px 20px;border-radius:14px;box-shadow:0 10px 40px rgba(99,102,241,.5);font-size:14px;font-weight:700;display:flex;align-items:center;gap:10px;transform:translateX(calc(100% + 30px));transition:transform .4s cubic-bezier(.4,1.4,.6,1);pointer-events:none;max-width:340px}
   #globalFriendNotif.show{transform:translateX(0)}
   #globalFriendNotif .notif-icon{font-size:22px;flex-shrink:0}
+  #gameInviteToast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-200%);z-index:600;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;padding:12px 16px;border-radius:14px;box-shadow:0 10px 40px rgba(99,102,241,.6);display:flex;align-items:center;gap:10px;transition:transform .4s cubic-bezier(.4,1.4,.6,1);max-width:90vw;pointer-events:auto}
+  #gameInviteToast.show{transform:translateX(-50%) translateY(0)}
+  #gameInviteToast .toast-avatar{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.25);display:grid;place-items:center;font-size:18px;flex-shrink:0}
+  #gameInviteToast .toast-info{flex:1;min-width:0}
+  #gameInviteToast .toast-name{font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #gameInviteToast .toast-desc{font-size:11px;opacity:.9}
+  #gameInviteToast .toast-actions{display:flex;gap:6px;flex-shrink:0}
+  #gameInviteToast .toast-btn{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;border:none;cursor:pointer;transition:.2s}
+  #gameInviteToast .toast-btn.accept{background:white;color:var(--accent)}
+  #gameInviteToast .toast-btn.decline{background:rgba(255,255,255,.2);color:white}
+  #gameInviteToast .toast-btn:hover{transform:scale(1.05)}
   .invite-friend-list{max-height:300px;overflow-y:auto;margin:14px 0;text-align:left}
   .invite-friend-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:var(--tile-bg);border:1px solid var(--line);margin-bottom:6px}
   .invite-friend-item .friend-avatar{width:36px;height:36px;font-size:18px}
@@ -547,6 +556,18 @@
 <div id="globalFriendNotif">
   <span class="notif-icon">👥</span>
   <span id="globalFriendNotifText">New friend request!</span>
+</div>
+
+<div id="gameInviteToast">
+  <div class="toast-avatar" id="gameInviteToastAvatar">👤</div>
+  <div class="toast-info">
+    <div class="toast-name" id="gameInviteToastName">Friend</div>
+    <div class="toast-desc">invited you to play Word Strike</div>
+  </div>
+  <div class="toast-actions">
+    <button class="toast-btn accept" id="gameInviteToastAccept">Accept</button>
+    <button class="toast-btn decline" id="gameInviteToastDecline">Decline</button>
+  </div>
 </div>
 
 <div class="wrap">
@@ -719,10 +740,10 @@
       <div class="stat"><span class="v" id="pStreak">0</span><span class="l">Streak</span></div>
     </div>
 
-    <div class="section-title">🏅 Badges</div>
+    <div class="section-title">Badges</div>
     <div class="badges-grid" id="pBadges"></div>
 
-    <div class="section-title">📊 Categories Played</div>
+    <div class="section-title">Categories Played</div>
     <div class="cat-stats-list" id="pCatStats"></div>
 
     <button class="primary" id="closeProfileBtn" style="width:100%;margin-top:8px">Close</button>
@@ -775,14 +796,14 @@
 
 <div class="modal hidden" id="waitingModal">
   <div class="modal-box">
-    <div class="emoji-big">📤</div>
-    <h2>Share This Code</h2>
-    <p>Send this code to your friend so they can join</p>
+    <div class="emoji-big">⏳</div>
+    <h2>Waiting for Opponent</h2>
+    <p id="waitingDesc">Waiting for your friend to join...</p>
     <div class="code-display" id="codeDisplay">------</div>
     <div class="code-hint">Tap the code to select all</div>
     <div class="share-actions" style="margin-top:8px">
-      <button class="green" id="copyCodeBtn">Copy Code</button>
-      <button class="ghost" id="shareCodeBtn" style="color:var(--txt)">Share</button>
+      <button class="ghost" id="copyCodeBtn" style="color:var(--txt)">Copy Code</button>
+      <button class="ghost" id="shareCodeBtn" style="color:var(--txt)">Copy Link</button>
     </div>
     <button class="primary" id="inviteFriendBtn" style="margin-top:14px;background:linear-gradient(135deg,#22c55e,#10b981)">Invite a Friend</button>
     <div class="feedback" id="waitingFeedback" style="margin-top:12px"></div>
@@ -800,13 +821,13 @@
   </div>
 </div>
 
-<div class="modal hidden" id="incomingInviteModal">
+<div class="modal hidden" id="directInviteWaitingModal">
   <div class="modal-box">
-    <div class="emoji-big">🎮</div>
-    <h2>Game Invite</h2>
-    <p id="incomingInviteText">Your friend invited you to play!</p>
-    <button class="primary green" id="acceptInviteBtn">Accept</button>
-    <button class="ghost" id="declineInviteBtn" style="width:100%;margin-top:8px;color:var(--txt)">Decline</button>
+    <div class="emoji-big">⏳</div>
+    <h2>Waiting for Response</h2>
+    <p id="directInviteText">Waiting for your friend to accept the challenge...</p>
+    <div class="feedback show warn" id="directInviteFeedback">Invitation sent!</div>
+    <button class="ghost" id="cancelDirectInviteBtn" style="width:100%;margin-top:8px;color:var(--txt)">Cancel</button>
   </div>
 </div>
 
@@ -836,9 +857,12 @@ let presenceChannel = null;
 let leaderboardChannel = null;
 let friendsChannel = null;
 let gameInviteChannel = null;
+let inviteResponseChannel = null;
 let roomChannel = null;
 let globalNotifTimer = null;
 let activeInvite = null;
+let inviteToastTimer = null;
+let directInvitePollInterval = null;
 
 const WORDS = {
   3: ["CAT","DOG","SUN","RUN","BIG","RED","TOP","FLY","JOY","KEY","ICE","SKY","ARM","BED","CUP","EGG","FOX","GAP","HAT","INK","JAM","KIT","LOG","MAP","NET","OAK","PIG","RAT","SEA","TEA","VAN","WAX","YES","ZOO","BAT","COW","DEW","ELF","FAN","GUM","HUG","IVY","JAR","LAB","MUD","NAP","OWL","PEN","RUG","AIR","BAG","CAP","DIG","EAR","FIT","GAS","HEN","JOB","KID","LID","MAN","NEW","OIL","POT","RIB","SIP","TIP","URN","VET","WEB","YAK","ZAP","ANT","BOY","CRY","DAY","EYE","FUR","GYM","HOP","ILL","JOG","KEG","LAW","MIX","NOD","ODD","PAW","RAW","SAW","TAG","USE","VOW","WAR","YAM","ZIG"],
@@ -938,10 +962,13 @@ let game = {
   liveScore:0,
   wrongTries:0,
   opponentName:"",
+  opponentAvatar:"",
   opponentTime:0,
   opponentTries:0,
   opponentFinished:false,
-  myFinished:false
+  myFinished:false,
+  waitingForOpponent:false,
+  challengeTargetFriend:null
 };
 
 let leaderboard = [];
@@ -1090,15 +1117,6 @@ async function createProfile(username, avatar){
     return { ok:false, msg:v.msg };
   }
 
-  const { data: existing } = await supabaseClient
-    .from("profiles")
-    .select("id")
-    .ilike("username", username)
-    .maybeSingle();
-  if(existing){
-    return { ok:false, msg:"This name is already taken. Pick another one." };
-  }
-
   const { data: authData, error: authError } = await supabaseClient.auth.signInAnonymously();
   if(authError){
     console.error("Auth error:", authError);
@@ -1120,6 +1138,15 @@ async function createProfile(username, avatar){
 
   if(profileError){
     console.error("Profile error:", profileError);
+    if(profileError.message && profileError.message.includes("not allowed")){
+      return { ok:false, msg:"This name is not allowed" };
+    }
+    if(profileError.message && profileError.message.includes("banned")){
+      return { ok:false, msg:"This name is not allowed" };
+    }
+    if(profileError.message && profileError.message.includes("duplicate")){
+      return { ok:false, msg:"This name is already taken" };
+    }
     return { ok:false, msg:profileError.message };
   }
 
@@ -1165,6 +1192,7 @@ function setupUIForPlayer(){
   startMultTimerUI();
   startFriendRequestListener();
   startGameInviteListener();
+  startInviteResponseListener();
   updateFriendBadgeCount();
 }
 
@@ -1718,6 +1746,9 @@ async function createSession(){
   game.friendSessionTotalTries = 0;
   game.myFinished = false;
   game.opponentFinished = false;
+  game.waitingForOpponent = true;
+  game.opponentName = "";
+  game.opponentAvatar = "";
 
   const { error } = await supabaseClient.from("game_rooms").insert({
     code,
@@ -1736,7 +1767,48 @@ async function createSession(){
 
   document.getElementById("friendModal").classList.add("hidden");
   listenToMyRoom(code);
-  beginFriendRound();
+  showWaitingRoom(code);
+}
+
+function showWaitingRoom(code){
+  const modal = document.getElementById("waitingModal");
+  document.getElementById("codeDisplay").textContent = code;
+  document.getElementById("waitingDesc").textContent = "Share this code or invite a friend";
+  document.getElementById("codeDisplay").style.display = "block";
+  document.getElementById("copyCodeBtn").style.display = "block";
+  document.getElementById("shareCodeBtn").style.display = "block";
+  document.getElementById("inviteFriendBtn").style.display = "block";
+  const fb = document.getElementById("waitingFeedback");
+  fb.textContent = "Waiting for a friend to join...";
+  fb.className = "feedback show warn";
+  modal.classList.remove("hidden");
+
+  document.getElementById("copyCodeBtn").onclick = async () => {
+    try{
+      await navigator.clipboard.writeText(code);
+      document.getElementById("copyCodeBtn").textContent = "Copied!";
+      setTimeout(() => { document.getElementById("copyCodeBtn").textContent = "Copy Code"; }, 2000);
+    }catch(e){}
+  };
+
+  document.getElementById("shareCodeBtn").onclick = async () => {
+    const url = window.location.origin + window.location.pathname + "?join=" + code;
+    try{
+      await navigator.clipboard.writeText(url);
+      document.getElementById("shareCodeBtn").textContent = "Link Copied!";
+      setTimeout(() => { document.getElementById("shareCodeBtn").textContent = "Copy Link"; }, 2000);
+    }catch(e){}
+  };
+
+  document.getElementById("inviteFriendBtn").onclick = () => openInviteFriendModal(code);
+
+  document.getElementById("cancelWaitingBtn").onclick = async () => {
+    if(directInvitePollInterval){ clearInterval(directInvitePollInterval); directInvitePollInterval = null; }
+    await supabaseClient.from("game_rooms").delete().eq("code", code);
+    document.getElementById("waitingModal").classList.add("hidden");
+    if(roomChannel){ supabaseClient.removeChannel(roomChannel); roomChannel = null; }
+    backToCats();
+  };
 }
 
 function beginFriendRound(){
@@ -1797,33 +1869,15 @@ async function finishFriendSession(){
   }).eq("code", code);
 
   const modal = document.getElementById("waitingModal");
-  document.getElementById("codeDisplay").textContent = code;
-  document.getElementById("waitingFeedback").className = "feedback";
-  document.getElementById("waitingFeedback").textContent = "Waiting for opponent to finish...";
-  document.getElementById("waitingFeedback").className = "feedback show warn";
+  document.getElementById("waitingDesc").textContent = "Waiting for opponent to finish...";
+  document.getElementById("codeDisplay").style.display = "none";
+  document.getElementById("copyCodeBtn").style.display = "none";
+  document.getElementById("shareCodeBtn").style.display = "none";
+  document.getElementById("inviteFriendBtn").style.display = "none";
+  const fb = document.getElementById("waitingFeedback");
+  fb.textContent = "Waiting for opponent to finish...";
+  fb.className = "feedback show warn";
   modal.classList.remove("hidden");
-
-  document.getElementById("copyCodeBtn").onclick = async () => {
-    try{
-      await navigator.clipboard.writeText(code);
-      document.getElementById("copyCodeBtn").textContent = "Copied!";
-      setTimeout(() => { document.getElementById("copyCodeBtn").textContent = "Copy Code"; }, 2000);
-    }catch(e){}
-  };
-
-  document.getElementById("shareCodeBtn").onclick = async () => {
-    const shareText = `Join my Word Strike challenge! Code: ${code}`;
-    if(navigator.share){
-      try{ await navigator.share({ title: "Word Strike Challenge", text: shareText }); }catch(e){}
-    } else { document.getElementById("copyCodeBtn").click(); }
-  };
-
-  document.getElementById("inviteFriendBtn").onclick = () => openInviteFriendModal(code);
-
-  document.getElementById("cancelWaitingBtn").onclick = () => {
-    document.getElementById("waitingModal").classList.add("hidden");
-    backToCats();
-  };
 }
 
 async function tryJoinSession(){
@@ -1869,7 +1923,7 @@ async function joinSessionByCode(code){
   }
 
   document.getElementById("joinModal").classList.add("hidden");
-  document.getElementById("incomingInviteModal").classList.add("hidden");
+  document.getElementById("gameInviteToast").classList.remove("show");
   startJoinerSession({ ...room, guest_name: state.name, guest_avatar: state.avatar });
 }
 
@@ -1901,6 +1955,7 @@ function startJoinerSession(room){
   game.friendSessionTotalTries = 0;
   game.myFinished = false;
   game.opponentFinished = false;
+  game.waitingForOpponent = false;
   listenToMyRoom(room.code);
   beginFriendRound();
 }
@@ -1914,12 +1969,26 @@ function listenToMyRoom(code){
       (payload) => {
         const room = payload.new;
         if(!room) return;
+
         if(game.friendHost){
           game.opponentName = room.guest_name || game.opponentName;
           game.opponentAvatar = room.guest_avatar || game.opponentAvatar;
           game.opponentTime = room.guest_total_time || 0;
           game.opponentTries = room.guest_total_tries || 0;
           game.opponentFinished = !!room.guest_finished;
+
+          if(game.waitingForOpponent && room.status === "playing"){
+            game.friendWords = room.words;
+            game.friendRounds = room.options.rounds;
+            game.friendMode = room.options.mode;
+            game.friendChallengeType = room.options.challengeType;
+            game.friendRoundIdx = 0;
+            game.waitingForOpponent = false;
+            if(directInvitePollInterval){ clearInterval(directInvitePollInterval); directInvitePollInterval = null; }
+            document.getElementById("directInviteWaitingModal").classList.add("hidden");
+            document.getElementById("waitingModal").classList.add("hidden");
+            setTimeout(() => beginFriendRound(), 300);
+          }
         } else {
           game.opponentName = room.host_name || game.opponentName;
           game.opponentAvatar = room.host_avatar || game.opponentAvatar;
@@ -2063,12 +2132,88 @@ function startGameInviteListener(){
       const data = payload.payload;
       if(!data || !data.code) return;
       activeInvite = data;
-      document.getElementById("incomingInviteText").textContent =
-        `${data.fromName} invited you to play Word Strike!`;
-      document.getElementById("incomingInviteModal").classList.remove("hidden");
+      showGameInviteToast(data);
       SFX.notify();
     })
     .subscribe();
+}
+
+function showGameInviteToast(data){
+  const toast = document.getElementById("gameInviteToast");
+  document.getElementById("gameInviteToastAvatar").textContent = data.fromAvatar || "👤";
+  document.getElementById("gameInviteToastName").textContent = data.fromName;
+  toast.classList.add("show");
+  if(inviteToastTimer) clearTimeout(inviteToastTimer);
+  inviteToastTimer = setTimeout(() => {
+    toast.classList.remove("show");
+    activeInvite = null;
+  }, 20000);
+}
+
+function startInviteResponseListener(){
+  if(inviteResponseChannel) supabaseClient.removeChannel(inviteResponseChannel);
+  inviteResponseChannel = supabaseClient
+    .channel("invite-response-" + currentUser.id, {
+      config: { broadcast: { self: false } }
+    })
+    .on("broadcast", { event: "invite-response" }, (payload) => {
+      const data = payload.payload;
+      if(!data) return;
+      if(data.accepted){
+        document.getElementById("directInviteWaitingModal").classList.add("hidden");
+        document.getElementById("waitingModal").classList.add("hidden");
+      } else {
+        document.getElementById("directInviteWaitingModal").classList.add("hidden");
+        document.getElementById("waitingModal").classList.add("hidden");
+        if(directInvitePollInterval){ clearInterval(directInvitePollInterval); directInvitePollInterval = null; }
+        showGlobalFriendNotif(data.fromName + " declined the challenge");
+        if(roomChannel){ supabaseClient.removeChannel(roomChannel); roomChannel = null; }
+        backToCats();
+      }
+    })
+    .subscribe();
+}
+
+async function acceptGameInvite(){
+  const toast = document.getElementById("gameInviteToast");
+  toast.classList.remove("show");
+  const data = activeInvite;
+  if(!data) return;
+  activeInvite = null;
+
+  const channel = supabaseClient.channel("invite-response-" + data.fromId, {
+    config: { broadcast: { self: false } }
+  });
+  await channel.subscribe();
+  await channel.send({
+    type: "broadcast",
+    event: "invite-response",
+    payload: { accepted: true, fromName: state.name }
+  });
+  setTimeout(() => supabaseClient.removeChannel(channel), 3000);
+
+  await joinSessionByCode(data.code);
+}
+
+async function declineGameInvite(){
+  const toast = document.getElementById("gameInviteToast");
+  toast.classList.remove("show");
+  const data = activeInvite;
+  if(!data) return;
+  activeInvite = null;
+
+  const channel = supabaseClient.channel("invite-response-" + data.fromId, {
+    config: { broadcast: { self: false } }
+  });
+  await channel.subscribe();
+  await channel.send({
+    type: "broadcast",
+    event: "invite-response",
+    payload: { accepted: false, fromName: state.name }
+  });
+  setTimeout(() => supabaseClient.removeChannel(channel), 3000);
+
+  await supabaseClient.from("game_rooms").delete().eq("code", data.code);
 }
 
 function confettiBurst(){
@@ -2536,6 +2681,7 @@ async function handleFriendRoundWin(){
 function backToCats(){
   if(timedState){ clearInterval(timedState.timer); timedState = null; }
   if(roomChannel){ supabaseClient.removeChannel(roomChannel); roomChannel = null; }
+  if(directInvitePollInterval){ clearInterval(directInvitePollInterval); directInvitePollInterval = null; }
   document.getElementById("timerBar").classList.remove("active");
   document.getElementById("gameView").style.display = "none";
   document.getElementById("catView").style.display = "block";
@@ -2548,6 +2694,8 @@ function backToCats(){
   game.friendRoundIdx = 0;
   game.myFinished = false;
   game.opponentFinished = false;
+  game.waitingForOpponent = false;
+  game.challengeTargetFriend = null;
 }
 
 function openProfile(){
@@ -2895,6 +3043,7 @@ async function challengeFriend(profile){
 
   const words = buildWordList("4", 5);
   const code = genSessionCode();
+
   game.friendWords = words;
   game.friendRoundIdx = 0;
   game.friendRounds = 5;
@@ -2916,6 +3065,8 @@ async function challengeFriend(profile){
   game.opponentTries = 0;
   game.myFinished = false;
   game.opponentFinished = false;
+  game.waitingForOpponent = true;
+  game.challengeTargetFriend = profile;
 
   const { error } = await supabaseClient.from("game_rooms").insert({
     code,
@@ -2938,27 +3089,47 @@ async function challengeFriend(profile){
   await sendGameInvite(profile.id, code);
   document.getElementById("friendsModal").classList.add("hidden");
   listenToMyRoom(code);
-  beginFriendRound();
-}
 
-async function sendGameInvite(friendId, code){
-  const channel = supabaseClient.channel("game-invite-" + friendId, {
-    config: { broadcast: { self: false } }
-  });
-  await channel.subscribe();
-  await channel.send({
-    type: "broadcast",
-    event: "game-invite",
-    payload: {
-      fromId: currentUser.id,
-      fromName: state.name,
-      fromAvatar: state.avatar,
-      code: code
+  const modal = document.getElementById("directInviteWaitingModal");
+  document.getElementById("directInviteText").textContent = "Waiting for " + profile.username + " to accept the challenge...";
+  document.getElementById("directInviteFeedback").textContent = "Invitation sent!";
+  document.getElementById("directInviteFeedback").className = "feedback show warn";
+  modal.classList.remove("hidden");
+
+  if(directInvitePollInterval) clearInterval(directInvitePollInterval);
+  directInvitePollInterval = setInterval(async () => {
+    if(!game.waitingForOpponent){
+      clearInterval(directInvitePollInterval);
+      directInvitePollInterval = null;
+      return;
     }
-  });
-  setTimeout(() => supabaseClient.removeChannel(channel), 3000);
-  showGlobalFriendNotif("Invitation sent!");
-  SFX.notify();
+    const { data: room } = await supabaseClient
+      .from("game_rooms")
+      .select("status, guest_id, words, options")
+      .eq("code", code)
+      .maybeSingle();
+    if(room && room.status === "playing" && room.guest_id){
+      clearInterval(directInvitePollInterval);
+      directInvitePollInterval = null;
+      game.friendWords = room.words;
+      game.friendRounds = room.options.rounds;
+      game.friendMode = room.options.mode;
+      game.friendChallengeType = room.options.challengeType;
+      game.friendRoundIdx = 0;
+      game.waitingForOpponent = false;
+      document.getElementById("directInviteWaitingModal").classList.add("hidden");
+      document.getElementById("waitingModal").classList.add("hidden");
+      setTimeout(() => beginFriendRound(), 300);
+    }
+  }, 2000);
+
+  document.getElementById("cancelDirectInviteBtn").onclick = async () => {
+    if(directInvitePollInterval){ clearInterval(directInvitePollInterval); directInvitePollInterval = null; }
+    await supabaseClient.from("game_rooms").delete().eq("code", code);
+    document.getElementById("directInviteWaitingModal").classList.add("hidden");
+    if(roomChannel){ supabaseClient.removeChannel(roomChannel); roomChannel = null; }
+    backToCats();
+  };
 }
 
 let tempName = "";
@@ -3168,17 +3339,12 @@ function bindEvents(){
   document.getElementById("inviteFriendModal").onclick = e => {
     if(e.target.id === "inviteFriendModal") e.currentTarget.classList.add("hidden");
   };
+  document.getElementById("directInviteWaitingModal").onclick = e => {
+    if(e.target.id === "directInviteWaitingModal") e.currentTarget.classList.add("hidden");
+  };
   document.getElementById("closeInviteFriendBtn").onclick = () => document.getElementById("inviteFriendModal").classList.add("hidden");
-  document.getElementById("acceptInviteBtn").onclick = () => {
-    if(!activeInvite) return;
-    document.getElementById("incomingInviteModal").classList.add("hidden");
-    joinSessionByCode(activeInvite.code);
-    activeInvite = null;
-  };
-  document.getElementById("declineInviteBtn").onclick = () => {
-    document.getElementById("incomingInviteModal").classList.add("hidden");
-    activeInvite = null;
-  };
+  document.getElementById("gameInviteToastAccept").onclick = acceptGameInvite;
+  document.getElementById("gameInviteToastDecline").onclick = declineGameInvite;
   document.getElementById("changeAvatarBtn").onclick = () => openAvatarModal("change");
   document.getElementById("guessInput").addEventListener("keypress", e => {
     if(e.key === "Enter") submitGuess();
@@ -3188,10 +3354,10 @@ function bindEvents(){
     e.target.value = e.target.value.replace(/[^A-Za-z]/g, "").toUpperCase();
     if(e.target.value.length > prev.replace(/[^A-Za-z]/g, "").length){ SFX.type(); }
   });
-  document.getElementById("nameNextBtn").onclick = () => {
+  document.getElementById("nameNextBtn").onclick = async () => {
     const n = document.getElementById("nameInput").value.trim();
-    const v = validateUsername(n);
     const fb = document.getElementById("nameFeedback");
+    const v = validateUsername(n);
     if(!v.ok){
       document.getElementById("nameInput").style.borderColor = "var(--red)";
       fb.textContent = "⚠️ " + v.msg;
@@ -3199,6 +3365,35 @@ function bindEvents(){
       SFX.error();
       return;
     }
+    
+    const btn = document.getElementById("nameNextBtn");
+    btn.disabled = true;
+    btn.textContent = "Checking...";
+    
+    const { data, error } = await supabaseClient.rpc("is_username_available", { check_name: n });
+    
+    btn.disabled = false;
+    btn.textContent = "Continue";
+    
+    if(error){
+      fb.textContent = "⚠️ Could not verify name. Try again";
+      fb.className = "feedback show err";
+      SFX.error();
+      return;
+    }
+    
+    if(data && data.available === false){
+      document.getElementById("nameInput").style.borderColor = "var(--red)";
+      if(data.reason === "taken"){
+        fb.textContent = "⚠️ This name is already taken";
+      } else {
+        fb.textContent = "⚠️ This name is not allowed";
+      }
+      fb.className = "feedback show err";
+      SFX.error();
+      return;
+    }
+    
     document.getElementById("nameInput").style.borderColor = "var(--line)";
     tempName = n;
     document.getElementById("nameModal").classList.add("hidden");
