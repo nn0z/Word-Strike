@@ -240,14 +240,14 @@
   #profileModal{z-index:100}
   #avatarModal{z-index:500}
   #nameModal{z-index:200}
-  #friendModal{z-index:250}
   #joinModal{z-index:260}
   #waitingModal{z-index:270}
   #shopModal{z-index:280}
-  #friendsModal{z-index:290}
-  #inviteFriendModal{z-index:310}
-  #directInviteWaitingModal{z-index:330}
-  .modal-box{background:linear-gradient(180deg,var(--card-bg),var(--bg2));border:1px solid var(--line);border-radius:24px;padding:32px;max-width:520px;width:100%;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:up .4s cubic-bezier(.4,1.4,.6,1);max-height:90vh;overflow-y:auto;scrollbar-width:none;margin:auto;transition:background .4s ease, border-color .4s ease}
+  #friendsModal{z-index:600}
+  #inviteFriendModal{z-index:650}
+  #friendModal{z-index:700}
+  #directInviteWaitingModal{z-index:750}
+  .modal-box{background:linear-gradient(180deg,var(--card-bg),var(--bg2));border:1px solid var(--line);border-radius:24px;padding:32px;max-width:520px;width:100%;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:up .4s cubic-bezier(.4,1.4,.6,1);max-height:90vh;overflow-y:auto;scrollbar-width:none;margin:auto;transition:background .4s ease, border-color .4s ease;position:relative;z-index:1}
   .modal-box::-webkit-scrollbar{display:none}
   @keyframes up{from{transform:translateY(30px) scale(.95);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
   .modal-box h2{font-size:22px;margin-bottom:6px}
@@ -519,7 +519,7 @@
   #globalFriendNotif{position:fixed;top:20px;right:20px;z-index:450;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;padding:14px 20px;border-radius:14px;box-shadow:0 10px 40px rgba(99,102,241,.5);font-size:14px;font-weight:700;display:flex;align-items:center;gap:10px;transform:translateX(calc(100% + 30px));transition:transform .4s cubic-bezier(.4,1.4,.6,1);pointer-events:none;max-width:340px}
   #globalFriendNotif.show{transform:translateX(0)}
   #globalFriendNotif .notif-icon{font-size:22px;flex-shrink:0}
-  #gameInviteToast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-200%);z-index:600;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;padding:12px 16px;border-radius:14px;box-shadow:0 10px 40px rgba(99,102,241,.6);display:flex;align-items:center;gap:10px;transition:transform .4s cubic-bezier(.4,1.4,.6,1);max-width:90vw;pointer-events:auto}
+  #gameInviteToast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-200%);z-index:800;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;padding:12px 16px;border-radius:14px;box-shadow:0 10px 40px rgba(99,102,241,.6);display:flex;align-items:center;gap:10px;transition:transform .4s cubic-bezier(.4,1.4,.6,1);max-width:90vw;pointer-events:auto}
   #gameInviteToast.show{transform:translateX(-50%) translateY(0)}
   #gameInviteToast .toast-avatar{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.25);display:grid;place-items:center;font-size:18px;flex-shrink:0}
   #gameInviteToast .toast-info{flex:1;min-width:0}
@@ -855,7 +855,6 @@ let currentUser = null;
 let onlineUsers = new Set();
 let presenceChannel = null;
 let leaderboardChannel = null;
-let friendsChannel = null;
 let gameInviteChannel = null;
 let inviteResponseChannel = null;
 let roomChannel = null;
@@ -2216,6 +2215,121 @@ async function declineGameInvite(){
   await supabaseClient.from("game_rooms").delete().eq("code", data.code);
 }
 
+async function challengeFriend(profile){
+  if(!onlineUsers.has(profile.id)){
+    showGlobalFriendNotif(profile.username + " is offline");
+    return;
+  }
+
+  game.challengeTargetFriend = profile;
+  sessionSetup = { challengeType:"4", mode:"time", rounds:5 };
+  
+  const modal = document.getElementById("friendModal");
+  const body = document.getElementById("friendModalBody");
+  document.getElementById("friendModalIcon").textContent = "⚔️";
+  document.getElementById("friendModalTitle").textContent = "Challenge " + profile.username;
+  document.getElementById("friendModalDesc").textContent = "Choose your settings";
+  renderHostSetup(body);
+  
+  const createBtn = document.getElementById("createSessionBtn");
+  createBtn.textContent = "⚔️ Send Challenge";
+  createBtn.onclick = () => createDirectChallenge(profile);
+  
+  modal.classList.remove("hidden");
+}
+
+async function createDirectChallenge(profile){
+  const words = buildWordList(sessionSetup.challengeType, sessionSetup.rounds);
+  const code = genSessionCode();
+
+  game.friendWords = words;
+  game.friendRoundIdx = 0;
+  game.friendRounds = sessionSetup.rounds;
+  game.friendMode = sessionSetup.mode;
+  game.friendChallengeType = sessionSetup.challengeType;
+  game.friendHost = true;
+  game.friend = true;
+  game.friendTotalTime = 0;
+  game.friendStartTime = 0;
+  game.friendSessionCode = code;
+  game.category = CATEGORIES.find(c => c.id === "friend");
+  game.timed = false;
+  game.tries = [];
+  game.over = false;
+  game.friendSessionTotalTries = 0;
+  game.opponentName = profile.username;
+  game.opponentAvatar = profile.avatar || "👤";
+  game.opponentTime = 0;
+  game.opponentTries = 0;
+  game.myFinished = false;
+  game.opponentFinished = false;
+  game.waitingForOpponent = true;
+
+  const { error } = await supabaseClient.from("game_rooms").insert({
+    code,
+    host_id: currentUser.id,
+    host_name: state.name,
+    host_avatar: state.avatar,
+    guest_id: profile.id,
+    guest_name: profile.username,
+    guest_avatar: profile.avatar,
+    options: sessionSetup,
+    words: words,
+    status: "waiting"
+  });
+
+  if(error){
+    showGlobalFriendNotif("Could not create room");
+    return;
+  }
+
+  await sendGameInvite(profile.id, code);
+  document.getElementById("friendModal").classList.add("hidden");
+  document.getElementById("friendsModal").classList.add("hidden");
+  listenToMyRoom(code);
+
+  const modal = document.getElementById("directInviteWaitingModal");
+  document.getElementById("directInviteText").textContent = "Waiting for " + profile.username + " to accept...";
+  document.getElementById("directInviteFeedback").textContent = "Invitation sent!";
+  document.getElementById("directInviteFeedback").className = "feedback show warn";
+  modal.classList.remove("hidden");
+
+  if(directInvitePollInterval) clearInterval(directInvitePollInterval);
+  directInvitePollInterval = setInterval(async () => {
+    if(!game.waitingForOpponent){
+      clearInterval(directInvitePollInterval);
+      directInvitePollInterval = null;
+      return;
+    }
+    const { data: room } = await supabaseClient
+      .from("game_rooms")
+      .select("status, guest_id, words, options")
+      .eq("code", code)
+      .maybeSingle();
+    if(room && room.status === "playing" && room.guest_id){
+      clearInterval(directInvitePollInterval);
+      directInvitePollInterval = null;
+      game.friendWords = room.words;
+      game.friendRounds = room.options.rounds;
+      game.friendMode = room.options.mode;
+      game.friendChallengeType = room.options.challengeType;
+      game.friendRoundIdx = 0;
+      game.waitingForOpponent = false;
+      document.getElementById("directInviteWaitingModal").classList.add("hidden");
+      document.getElementById("waitingModal").classList.add("hidden");
+      setTimeout(() => beginFriendRound(), 300);
+    }
+  }, 2000);
+
+  document.getElementById("cancelDirectInviteBtn").onclick = async () => {
+    if(directInvitePollInterval){ clearInterval(directInvitePollInterval); directInvitePollInterval = null; }
+    await supabaseClient.from("game_rooms").delete().eq("code", code);
+    document.getElementById("directInviteWaitingModal").classList.add("hidden");
+    if(roomChannel){ supabaseClient.removeChannel(roomChannel); roomChannel = null; }
+    backToCats();
+  };
+}
+
 function confettiBurst(){
   const colors = ["#22c55e","#fbbf24","#6366f1","#8b5cf6","#f472b6","#38bdf8"];
   for(let i=0; i<40; i++){
@@ -3033,103 +3147,6 @@ async function respondFriendRequest(id, status){
   SFX.notify();
   loadFriendsUI();
   updateFriendBadgeCount();
-}
-
-async function challengeFriend(profile){
-  if(!onlineUsers.has(profile.id)){
-    showGlobalFriendNotif(profile.username + " is offline");
-    return;
-  }
-
-  const words = buildWordList("4", 5);
-  const code = genSessionCode();
-
-  game.friendWords = words;
-  game.friendRoundIdx = 0;
-  game.friendRounds = 5;
-  game.friendMode = "time";
-  game.friendChallengeType = "4";
-  game.friendHost = true;
-  game.friend = true;
-  game.friendTotalTime = 0;
-  game.friendStartTime = 0;
-  game.friendSessionCode = code;
-  game.category = CATEGORIES.find(c => c.id === "friend");
-  game.timed = false;
-  game.tries = [];
-  game.over = false;
-  game.friendSessionTotalTries = 0;
-  game.opponentName = profile.username;
-  game.opponentAvatar = profile.avatar || "👤";
-  game.opponentTime = 0;
-  game.opponentTries = 0;
-  game.myFinished = false;
-  game.opponentFinished = false;
-  game.waitingForOpponent = true;
-  game.challengeTargetFriend = profile;
-
-  const { error } = await supabaseClient.from("game_rooms").insert({
-    code,
-    host_id: currentUser.id,
-    host_name: state.name,
-    host_avatar: state.avatar,
-    guest_id: profile.id,
-    guest_name: profile.username,
-    guest_avatar: profile.avatar,
-    options: { challengeType: "4", mode: "time", rounds: 5 },
-    words: words,
-    status: "waiting"
-  });
-
-  if(error){
-    showGlobalFriendNotif("Could not create room");
-    return;
-  }
-
-  await sendGameInvite(profile.id, code);
-  document.getElementById("friendsModal").classList.add("hidden");
-  listenToMyRoom(code);
-
-  const modal = document.getElementById("directInviteWaitingModal");
-  document.getElementById("directInviteText").textContent = "Waiting for " + profile.username + " to accept the challenge...";
-  document.getElementById("directInviteFeedback").textContent = "Invitation sent!";
-  document.getElementById("directInviteFeedback").className = "feedback show warn";
-  modal.classList.remove("hidden");
-
-  if(directInvitePollInterval) clearInterval(directInvitePollInterval);
-  directInvitePollInterval = setInterval(async () => {
-    if(!game.waitingForOpponent){
-      clearInterval(directInvitePollInterval);
-      directInvitePollInterval = null;
-      return;
-    }
-    const { data: room } = await supabaseClient
-      .from("game_rooms")
-      .select("status, guest_id, words, options")
-      .eq("code", code)
-      .maybeSingle();
-    if(room && room.status === "playing" && room.guest_id){
-      clearInterval(directInvitePollInterval);
-      directInvitePollInterval = null;
-      game.friendWords = room.words;
-      game.friendRounds = room.options.rounds;
-      game.friendMode = room.options.mode;
-      game.friendChallengeType = room.options.challengeType;
-      game.friendRoundIdx = 0;
-      game.waitingForOpponent = false;
-      document.getElementById("directInviteWaitingModal").classList.add("hidden");
-      document.getElementById("waitingModal").classList.add("hidden");
-      setTimeout(() => beginFriendRound(), 300);
-    }
-  }, 2000);
-
-  document.getElementById("cancelDirectInviteBtn").onclick = async () => {
-    if(directInvitePollInterval){ clearInterval(directInvitePollInterval); directInvitePollInterval = null; }
-    await supabaseClient.from("game_rooms").delete().eq("code", code);
-    document.getElementById("directInviteWaitingModal").classList.add("hidden");
-    if(roomChannel){ supabaseClient.removeChannel(roomChannel); roomChannel = null; }
-    backToCats();
-  };
 }
 
 let tempName = "";
